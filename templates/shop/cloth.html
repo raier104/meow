@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Cloth - MEOW{% endblock %}
+{% block content %}
+<main class="main-content" style="max-width:1100px;margin:2rem auto;">
+    <h1 style="text-align:center;">Cloth Products</h1>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;">
+        {% for cloth in cloths %}
+        <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+            <img src="{{ cloth.image.url }}" alt="{{ cloth.name }}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
+            <h3>{{ cloth.name }}</h3>
+            <p>{{ cloth.price }} Taka</p>
+            {% if user.is_authenticated and user.user_type == "seller" %}
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+                    <form method="post" action="{% url 'shop:update_product' cloth.id %}" style="width:100%;">
+                        {% csrf_token %}
+                        <button type="submit" style="background:#2c5f5f;color:#fff;padding:6px 18px;border:none;border-radius:16px;font-weight:600;cursor:pointer;width:100%;">Update</button>
+                    </form>
+                    <form method="post" action="{% url 'shop:delete_product' cloth.id %}" style="width:100%;">
+                        {% csrf_token %}
+                        <button type="submit" style="background:#ff6b35;color:#fff;padding:6px 18px;border:none;border-radius:16px;font-weight:600;cursor:pointer;width:100%;">Delete</button>
+                    </form>
+                </div>
+            {% else %}
+                <form method="post" action="{% url 'shop:add_to_cart' cloth.id %}">
+                    {% csrf_token %}
+                    <button type="submit" style="background:#ff6b35;color:#fff;padding:8px 24px;border:none;border-radius:20px;font-weight:600;cursor:pointer;">Add to Cart</button>
+                </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% if user.is_authenticated and user.user_type == "seller" %}
+        <div style="text-align:center;margin-top:2rem;">
+            <form method="get" action="{% url 'shop:add_product' %}" style="display:inline-block;">
+                <input type="hidden" name="category" value="Cloth">
+                <button type="submit" style="background:#4caf50;color:#fff;padding:12px 36px;border-radius:24px;font-weight:600;font-size:18px;">Add Product</button>
+            </form>
+        </div>
+    {% endif %}
+</main>
+{% endblock %}

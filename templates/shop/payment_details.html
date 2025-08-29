@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Payment Details - MEOW{% endblock %}
+{% block content %}
+<main class="main-content" style="max-width:600px;margin:2rem auto;">
+    <h1 style="text-align:center;">Enter Payment Details</h1>
+    <form method="post" action="{% url 'shop:payment_success' %}" style="background:lightgrey;padding:2rem 2rem 1.5rem 2rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:2rem;">
+        {% csrf_token %}
+        <input type="hidden" name="payment_method" value="{{ method }}">
+        <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
+            <label style="font-size:1.1rem;font-weight:600;margin-right:12px;">Amount:</label>
+            <input type="text" name="amount" value="${{ total|floatformat:2 }}" readonly style="width:120px;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:1.1rem;text-align:right;background:#f8f9fa;">
+        </div>
+        {% if method == "bkash" or method == "nagad" or method == "rocket" or method == "upay" or method == "pathao" %}
+            <div style="margin-bottom:1.5rem;">
+                <label>Mobile Number</label>
+                <input type="text" name="mobile" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label>Transaction ID</label>
+                <input type="text" name="trxid" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+        {% elif method == "dbbl" or method == "ebl" or method == "brac" %}
+            <div style="margin-bottom:1.5rem;">
+                <label>Account Number</label>
+                <input type="text" name="account" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label>Reference</label>
+                <input type="text" name="reference" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+        {% elif method == "paypal" %}
+            <div style="margin-bottom:1.5rem;">
+                <label>PayPal Email</label>
+                <input type="email" name="paypal_email" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+        {% elif method == "visa" or method == "mastercard" %}
+            <div style="margin-bottom:1.5rem;">
+                <label>Card Number</label>
+                <input type="text" name="card_number" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label>Expiry Date</label>
+                <input type="text" name="expiry" placeholder="MM/YY" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <label>CVV</label>
+                <input type="text" name="cvv" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;">
+            </div>
+        {% endif %}
+        <div style="margin-top:2rem;display:flex;justify-content:space-between;">
+            <a href="{% url 'shop:payment' %}" style="background:#ff6b35;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;text-decoration:none;">Back</a>
+            <button type="submit" style="background:#2c5f5f;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;border:none;cursor:pointer;">Complete Payment</button>
+        </div>
+    </form>
+</main>
+{% endblock %}

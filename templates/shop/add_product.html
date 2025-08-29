@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Add Food Product{% endblock %}
+{% block content %}
+<main class="main-content" style="max-width:500px;margin:2rem auto;">
+    <h1 style="text-align:center;">Add Product</h1>
+    <form method="POST" enctype="multipart/form-data" style="background:#fff;padding:2rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+        {% csrf_token %}
+        <div style="margin-bottom:1rem;">
+            <label>Name</label>
+            <input type="text" name="name" required style="width:100%;padding:10px;border-radius:6px;border:1px solid #ddd;">
+        </div>
+        <div style="margin-bottom:1rem;">
+            <label>Price</label>
+            <input type="number" name="price" step="0.01" required style="width:100%;padding:10px;border-radius:6px;border:1px solid #ddd;">
+        </div>
+        <div style="margin-bottom:1rem;">
+            <label>Image</label>
+            <input type="file" name="image" accept="image/*" style="width:100%;padding:10px;border-radius:6px;border:1px solid #ddd;">
+        </div>
+        <div style="margin-bottom:1rem;">
+            <label>Category</label>
+            <input type="text" name="category_display" value="{{ category_name }}" readonly style="width:100%;padding:10px;border-radius:6px;border:1px solid #ddd;background:#f8f9fa;">
+        </div>
+        <button type="submit" style="background:#2c5f5f;color:#fff;padding:10px 30px;border:none;border-radius:20px;font-weight:600;cursor:pointer;width:100%;">Add Product</button>
+    </form>
+</main>
+{% endblock %}

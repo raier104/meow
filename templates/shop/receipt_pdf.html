@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Receipt - MEOW</title>
+    <style>
+        body { font-family: sans-serif; }
+        .header { text-align: center; font-size: 2rem; font-weight: bold; margin-bottom: 1rem; }
+        .info { margin-bottom: 1rem; }
+        ul { margin-left: 1.2rem; }
+    </style>
+</head>
+<body>
+    <div class="header">🐾 MEOW</div>
+    <div class="info">
+        <strong>Username:</strong> {{ user.username }}<br>
+        <strong>Email:</strong> {{ user.email }}<br>
+        <strong>Payment Method:</strong> {{ payment_method|title }}<br>
+        <strong>Amount:</strong> ${{ total|floatformat:2 }}
+    </div>
+    <div>
+        <strong>Products:</strong>
+        <ul>
+            {% for item in cart_items %}
+                <li>{{ item.name }} - ${{ item.price }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

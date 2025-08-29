@@ -1,0 +1,350 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MEOW{% endblock %}</title>
+
+    <!-- Inline CSS -->
+    <style>
+
+    * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+          line-height: 1.6;
+          color: #333;
+      }
+      .container {
+         max-width: 1200px;
+         margin: 0 auto;
+         padding: 0 20px;
+     }
+        /* Header */
+        header {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        nav a:hover, nav a.active {
+            color: #ff6b35;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .logo::before {
+            content: "🐾";
+            margin-right: 8px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ff6b35;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .header-icons span {
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .search-bar {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            width: 200px;
+        }
+
+        .login-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 22px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            margin-left: 18px;
+            transition: background 0.2s;
+        }
+        .login-btn:hover {
+            background: #e55a24;
+        }
+
+        /* Footer */
+        footer {
+            background: #f8f9fa;
+            color: #333;
+            padding: 3rem 0 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .footer-section ul li a:hover {
+            color: #ff6b35;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #e9ecef;
+            padding-top: 1rem;
+            text-align: center;
+            color: #666;
+        }
+
+        .footer-section p {
+            margin-bottom: 15px;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .social-icon img {
+            height: 20px;
+            width: auto;
+            display: block;
+            transition: transform 0.2s;
+        }
+
+        .social-icon:hover img {
+            transform: scale(1.2);
+        }
+
+        .payment-methods {
+            margin-top: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .payment-method {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .payment-method img {
+            height: 25px;
+            width: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">MEOW</div>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'users:user_home_page' %}">Home</a></li>
+                    <li><a href="{% url 'shop:shop' %}">Shop</a></li>
+                    <li><a href="#">Vet</a></li>
+                    <li><a href="#">Day Care</a></li>
+                    <li><a href="{% url 'about_us' %}">About Us</a></li>
+                    <li><a href="{% url 'contact_us' %}">Contact Us</a></li>
+                </ul>
+            </nav>
+            <div class="header-icons">
+                {% if request.resolver_match.url_name != "login" and request.resolver_match.url_name != "register" %}
+                    <span>🔍</span>
+                    <input type="text" placeholder="Search..." class="search-bar">
+                    <a href="{% url 'shop:cart' %}">🛒</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'users:profile' %}" class="profile-link" style="display:flex;align-items:center;gap:10px;">
+                            <span style="display:inline-flex;align-items:center;">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="vertical-align:middle;" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="16" cy="16" r="15" stroke="#222" stroke-width="2"/>
+                                    <circle cx="16" cy="13" r="4" stroke="#222" stroke-width="2"/>
+                                    <path d="M8 24c0-3.5 4-5.5 8-5.5s8 2 8 5.5" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </a>
+                        <span style="font-weight:700; color: #333;">Hi {{ user.username }}</span>
+                    {% else %}
+                        {% if request.resolver_match.url_name == "login" %}
+                            <!-- No login or sign up button on login page -->
+                        {% elif request.resolver_match.url_name == "register" %}
+                            <!-- No login or sign up button on register page -->
+                        {% else %}
+                            <a href="{% url 'users:login' %}" class="login-btn">Login</a>
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'users:profile' %}" class="profile-link" style="display:flex;align-items:center;gap:10px;">
+                            <span style="display:inline-flex;align-items:center;">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="vertical-align:middle;" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="16" cy="16" r="15" stroke="#222" stroke-width="2"/>
+                                    <circle cx="16" cy="13" r="4" stroke="#222" stroke-width="2"/>
+                                    <path d="M8 24c0-3.5 4-5.5 8-5.5s8 2 8 5.5" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                        </a>
+                        <span style="font-weight:700; color: #333;">Hi {{ user.username }}</span>
+                    {% endif %}
+                    <!-- No login or sign up button on login/register pages -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main>
+    {% block content %}
+    <!-- Default content is empty; child templates will provide content -->
+    {% endblock %}
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">MEOW</div>
+                <p>Your one-stop destination for all pet needs. Quality products, excellent service, and pet care expertise.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com" target="_blank" class="social-icon">
+                        <img src="{% static 'images/social_icon/facebook.png' %}" alt="Facebook">
+                    </a>
+                    <a href="https://www.instagram.com" target="_blank" class="social-icon">
+                        <img src="{% static 'images/social_icon/instagram.png' %}" alt="Instagram">
+                    </a>
+                    <a href="https://www.twitter.com" target="_blank" class="social-icon">
+                        <img src="{% static 'images/social_icon/twitter.png' %}" alt="Twitter">
+                    </a>
+                    <a href="mailto:yourmail@gmail.com" target="_blank" class="social-icon">
+                        <img src="{% static 'images/social_icon/gmail.png' %}" alt="Gmail">
+                    </a>
+                    <a href="https://wa.me/1234567890" target="_blank" class="social-icon">
+                        <img src="{% static 'images/social_icon/whatsapp.png' %}" alt="WhatsApp">
+                    </a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a href="{% url 'shop:food' %}">Pet Food</a></li>
+                    <li><a href="{% url 'shop:toy' %}">Toys</a></li>
+                    <li><a href="{% url 'shop:cloth' %}">Cloth</a></li>
+                    <li><a href="{% url 'shop:carrier' %}">Carrier</a></li>
+                    <li><a href="{% url 'shop:medicine' %}">Medicine</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Services</h3>
+                <ul>
+                    <li><a href="#">Pet Daycare</a></li>
+                    <li><a href="#">Veterinary</a></li>
+                    <li><a href="#">Grooming</a></li>
+                    <li><a href="#">Training</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="{% url 'users:contact_us' %}">Contact Us</a></li>
+                    <li><a href="{% url 'about_us' %}">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Returns</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 MEOW. All rights reserved.</p>
+            <div class="payment-methods">
+                <div class="payment-method"><img src="{% static 'images/icon/bkash.png' %}" alt="Bkash"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/Nagad.png' %}" alt="Nagad"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/rocket.png' %}" alt="Rocket"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/upay.png' %}" alt="Upay"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/dbbl.jpg' %}" alt="DBBL"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/ebl.png' %}" alt="EBL"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/BRAC.png' %}" alt="Brac Bank"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/pathao_pay.png' %}" alt="Pathao Pay"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/paypal.png' %}" alt="PayPal"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/visa.png' %}" alt="Visa"></div>
+                <div class="payment-method"><img src="{% static 'images/icon/card.png' %}" alt="MasterCard"></div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

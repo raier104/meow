@@ -1,0 +1,532 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}MEOW - Pet Store{% endblock %}
+
+{% block content %}
+ <style>
+
+     /* Hero Section */
+     .hero {
+         background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+         padding: 80px 0;
+         position: relative;
+         overflow: hidden;
+     }
+
+     .hero-content {
+         display: grid;
+         grid-template-columns: 1fr 1fr;
+         align-items: center;
+         gap: 50px;
+     }
+
+     .hero-text h1 {
+         font-size: 48px;
+         color: white;
+         margin-bottom: 20px;
+         line-height: 1.2;
+     }
+
+     .hero-text p {
+         color: white;
+         opacity: 0.9;
+         margin-bottom: 30px;
+         font-size: 16px;
+     }
+
+     .cta-button {
+         background: #333;
+         color: white;
+         padding: 15px 30px;
+         border: none;
+         border-radius: 25px;
+         font-size: 16px;
+         font-weight: bold;
+         cursor: pointer;
+         transition: transform 0.3s;
+     }
+
+     .cta-button:hover {
+         transform: translateY(-2px);
+     }
+
+     .hero-image {
+         position: relative;
+     }
+
+     .cat-circle {
+         width: 400px;
+         height: 400px;
+         background: rgba(255, 255, 255, 0.1);
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         margin: 0 auto;
+     }
+
+     .cat-image {
+         width: 300px;
+         height: 300px;
+         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><circle cx="150" cy="150" r="150" fill="%23ddd"/><text x="150" y="160" text-anchor="middle" font-size="60" fill="%23666">🐱</text></svg>') center/cover;
+         border-radius: 50%;
+     }
+
+     /* About Section */
+     .about-section {
+         padding: 80px 0;
+         background: white;
+     }
+
+     .about-content {
+         display: grid;
+         grid-template-columns: 1fr 1fr;
+         gap: 60px;
+         align-items: start;
+     }
+
+     .about-text h2 {
+         font-size: 36px;
+         margin-bottom: 30px;
+         color: #333;
+     }
+
+     .about-text p {
+         color: #666;
+         margin-bottom: 20px;
+         line-height: 1.8;
+     }
+
+     .stats-container {
+         display: grid;
+         grid-template-columns: repeat(2, 1fr);
+         gap: 30px;
+         margin-top: 40px;
+     }
+
+     .stat-item {
+         text-align: center;
+         padding: 30px 20px;
+         background: #f8f9fa;
+         border-radius: 15px;
+         transition: transform 0.3s;
+     }
+
+     .stat-item:hover {
+         transform: translateY(-5px);
+     }
+
+     .stat-number {
+         font-size: 36px;
+         font-weight: bold;
+         color: #ff6b35;
+         margin-bottom: 10px;
+     }
+
+     .stat-label {
+         color: #666;
+         font-weight: 500;
+     }
+
+     /* Team Section */
+     .team-section {
+         padding: 80px 0;
+         background: #f8f9fa;
+     }
+
+     .section-title {
+         text-align: center;
+         font-size: 36px;
+         margin-bottom: 50px;
+         color: #333;
+     }
+
+     .team-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+         gap: 40px;
+     }
+
+     .team-member {
+         background: white;
+         border-radius: 15px;
+         overflow: hidden;
+         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+         transition: transform 0.3s;
+     }
+
+     .team-member:hover {
+         transform: translateY(-10px);
+     }
+
+     .member-image {
+         width: 100%;
+         height: 250px;           
+         overflow: hidden;
+         border-radius: 15px;     
+     }
+
+     .member-image img {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;       
+         display: block;
+     }
+
+     .member-info {
+         padding: 25px;
+         text-align: center;
+     }
+
+     .member-name {
+         font-size: 20px;
+         font-weight: bold;
+         margin-bottom: 5px;
+         color: #333;
+     }
+
+     .member-role {
+         color: #ff6b35;
+         font-weight: 500;
+     }
+
+     /* Testimonials Section */
+     .testimonials-section {
+         padding: 80px 0;
+         background: white;
+     }
+
+     .testimonial-content {
+         display: grid;
+         grid-template-columns: 1fr 400px;
+         gap: 60px;
+         align-items: center;
+     }
+
+     .testimonial-text h2 {
+         font-size: 36px;
+         margin-bottom: 30px;
+         color: #333;
+     }
+
+     .testimonial-quote {
+         font-size: 18px;
+         line-height: 1.8;
+         color: #666;
+         margin-bottom: 30px;
+         font-style: italic;
+     }
+
+     .rating {
+         display: flex;
+         gap: 5px;
+         margin-bottom: 20px;
+     }
+
+     .star {
+         color: #ffc107;
+         font-size: 20px;
+     }
+
+     .testimonial-author {
+         font-weight: bold;
+         color: #333;
+     }
+
+     .testimonial-dots {
+         display: flex;
+         gap: 10px;
+         margin-top: 30px;
+     }
+
+     .dot {
+         width: 12px;
+         height: 12px;
+         border-radius: 50%;
+         background: #ddd;
+         cursor: pointer;
+         transition: background 0.3s;
+     }
+
+     .dot.active {
+         background: #ff6b35;
+     }
+
+     .testimonial-image {
+         width: 400px;
+         height: 400px;
+         background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         position: relative;
+     }
+
+     .testimonial-avatar {
+         width: 300px;
+         height: 300px;
+         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><circle cx="150" cy="150" r="150" fill="%23fff"/><text x="150" y="160" text-anchor="middle" font-size="60" fill="%23666">👨</text></svg>') center/cover;
+         border-radius: 50%;
+     }
+
+     /* App Download Section */
+     .app-section {
+         padding: 80px 0;
+         background: #f8f9fa;
+     }
+
+     .app-content {
+         display: grid;
+         grid-template-columns: repeat(3, 1fr);
+         gap: 30px;
+     }
+
+     .app-preview {
+         background: #ddd;
+         height: 500px;
+         border-radius: 15px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         color: #999;
+         font-size: 18px;
+     }
+
+     .phone-preview {
+         background: #333;
+         color: #fff;
+         position: relative;
+     }
+
+     .phone-preview::before {
+         content: '📱';
+         font-size: 100px;
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+     }
+
+
+     /* Decorative Elements */
+     .hero::before {
+         content: '';
+         position: absolute;
+         top: -50px;
+         right: -50px;
+         width: 200px;
+         height: 200px;
+         background: rgba(255, 255, 255, 0.1);
+         border-radius: 50%;
+     }
+
+     .hero::after {
+         content: '';
+         position: absolute;
+         bottom: -30px;
+         left: -30px;
+         width: 150px;
+         height: 150px;
+         background: rgba(255, 255, 255, 0.1);
+         border-radius: 50%;
+     }
+
+     /* Responsive Design */
+     @media (max-width: 768px) {
+
+         .hero-content,
+         .about-content,
+         .testimonial-content,
+         .footer-content {
+             grid-template-columns: 1fr;
+             gap: 30px;
+         }
+
+         .hero-text h1 {
+             font-size: 36px;
+         }
+
+         .stats-container {
+             grid-template-columns: 1fr;
+         }
+
+         .team-grid {
+             grid-template-columns: 1fr;
+         }
+
+         .app-content {
+             grid-template-columns: 1fr;
+         }
+
+         nav ul {
+             flex-direction: column;
+             gap: 10px;
+         }
+
+         .header-content {
+             flex-direction: column;
+             gap: 20px;
+         }
+     }
+ </style>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>If animals could talk, they'd talk about us!</h1>
+                <p>At sit voluptas societas est groth fugit perferendis nihilat a cliquam amet riscipit quis ligula a</p>
+                <button class="cta-button">Shop Now</button>
+            </div>
+            <div class="hero-image">
+                <div class="cat-circle">
+                    <div class="cat-image"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section">
+    <div class="container">
+        <div class="about-content">
+            <div class="about-text">
+                <h2>About Our Service</h2>
+                <p>MEOW connects pet owners with verified veterinary clinics across Bangladesh. 
+                   Users can view doctor profiles, check availability, and book appointments online or offline. 
+                   Our platform also supports live video consultations, making veterinary care more accessible than ever.</p>
+                <p>Through our dedicated e-commerce section, users can find high-quality pet food, medicines, litter, and accessories. 
+                   Sellers can list their products securely, and buyers can shop with confidence using integrated payment gateways 
+                   like bKash, Nagad, and cards.</p>
+                <p>MEOW ensures smooth interaction between pet owners, clinics, and sellers. 
+                   Users receive real-time notifications, upload prescriptions, and rate services. 
+                   With admin monitoring and multilingual support, the platform fosters a trustworthy and 
+                   user-friendly environment for all pet care needs.</p>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">1k+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">400+</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Support</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <h2 class="section-title">Our Team</h2>
+        <div class="team-grid">
+            
+            <!-- Team Member 1 -->
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="{% static 'images/team_images/raier.jpg' %}" alt="Md. Raier Rahman Ove">
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Md. Raier Rahman Ove</div>
+                    <div class="member-role">Backend Developer</div>
+                </div>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="{% static 'images/team_images/sadman.jpg' %}" alt="Sadman Sakib">
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Sadman Sakib</div>
+                    <div class="member-role">Frontend Developer</div>
+                </div>
+            </div>
+
+            <!-- Team Member 3 -->
+            <div class="team-member">
+                <div class="member-image">
+                    <img src="{% static 'images/team_images/tausif.jpg' %}" alt="Md. Tausif Uddin">
+                </div>
+                <div class="member-info">
+                    <div class="member-name">Md. Tausif Uddin</div>
+                    <div class="member-role">UI/UX Designer</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="testimonial-content">
+            <div class="testimonial-text">
+                <h2>What people say about us</h2>
+                <div class="rating">
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                    <span class="star">★</span>
+                </div>
+                <div class="testimonial-quote">
+                    "After switching to their pet food, my cat is more energetic and healthier than ever. Truly grateful for such quality
+                    products."
+                </div>
+                <div class="testimonial-author">Building our dream</div>
+
+                <div class="testimonial-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+
+            <div class="testimonial-image">
+                <div class="testimonial-avatar"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Testimonial dots functionality
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', function () {
+            dots.forEach(d => d.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Team member hover effects
+    const teamMembers = document.querySelectorAll('.team-member');
+    teamMembers.forEach(member => {
+        member.addEventListener('mouseenter', function () {
+            this.style.transform = 'translateY(-10px)';
+        });
+        member.addEventListener('mouseleave', function () {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+{% endblock %}

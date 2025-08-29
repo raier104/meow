@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<main class="main-content" style="max-width:600px;margin:2rem auto;">
+    <h1 style="text-align:center;">Your Cart</h1>
+    <form id="cart-form" style="background:lightgrey;padding:2rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+        <table style="width:100%;margin-bottom:2rem;">
+            <thead>
+                <tr style="border-bottom:1px solid #eee;">
+                    <th style="text-align:left;padding-bottom:10px;">Item</th>
+                    <th style="text-align:right;padding-bottom:10px;">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td style="text-align:right;">${{ item.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div style="margin-bottom:1rem;">
+            <label for="coupon" style="font-weight:500;">Coupon (%):</label>
+            <input type="number" id="coupon" name="coupon" min="0" max="100" style="padding:8px 12px;border-radius:6px;border:1px solid #ddd;width:120px;margin-left:10px;">
+            <button type="button" onclick="applyCoupon()" style="background:#2c5f5f;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-left:10px;">Apply</button>
+        </div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:1rem;">
+            Total: $<span id="total">{{ total|floatformat:2 }}</span>
+        </div>
+        <div style="font-size:18px;font-weight:600;color:#2c5f5f;margin-bottom:2rem;"{% if not coupon or coupon == 0 %}display:none;{% endif %} id="discount-row">
+            Discounted Total: $<span id="discounted-total">{{ discounted_total|floatformat:2 }}</span>
+        </div>
+        <input type="hidden" id="coupon-value" value="{{ coupon }}">
+        <button type="button" onclick="goToPayment()" style="background:#ff6b35;color:#fff;padding:12px 32px;border:none;border-radius:20px;font-size:18px;font-weight:600;cursor:pointer;width:100%;">Go to Payment</button>
+    </form>
+</main>
+<script>
+function applyCoupon() {
+    var coupon = parseFloat(document.getElementById('coupon').value);
+    var total = parseFloat(document.getElementById('total').innerText);
+    if (!isNaN(coupon) && coupon > 0 && coupon <= 100) {
+        var discounted = (total * (1 - coupon / 100)).toFixed(2);
+        document.getElementById('discount-row').style.display = 'block';
+        document.getElementById('discounted-total').innerText = discounted;
+        // Save coupon in session via AJAX
+        fetch("{% url 'shop:cart' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "set_coupon=" + coupon
+        });
+    } else {
+        document.getElementById('discount-row').style.display = 'none';
+        fetch("{% url 'shop:cart' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "set_coupon=0"
+        });
+    }
+}
+function goToPayment() {
+    window.location.href = "{% url 'shop:payment' %}";
+}
+</script>
+   
+{% endblock %}
+

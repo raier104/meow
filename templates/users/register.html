@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - MEOW{% endblock %}
+
+{% block content %}
+<style>
+       .main-content {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         min-height: 70vh;
+         padding: 40px 20px;
+     }
+
+     .register-container {
+         background: lightgrey;
+         padding: 40px;
+         border-radius: 15px;
+         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+         width: 100%;
+         max-width: 400px;
+     }
+
+     .register-title {
+         text-align: center;
+         font-size: 24px;
+         font-weight: bold;
+         color: #333;
+         margin-bottom: 30px;
+     }
+
+     .form-group {
+         margin-bottom: 20px;
+     }
+
+     .form-group label,
+    label[for="id_username"],
+    label[for="id_email"],
+    label[for="id_password1"],
+    label[for="id_password2"],
+    label[for="id_account_type"] {
+        font-weight: 700 !important;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: #222;
+        display: block;
+    }
+
+    .form-group input,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="password"],
+    select {
+        width: 100%;
+        padding: 10px 9px;
+        border: 2px solid black;
+        border-radius: 10px;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.3s;
+        margin-bottom: 18px;
+    }
+     .name-row {
+         display: flex;
+         gap: 15px;
+     }
+
+     .name-row .form-group {
+         flex: 1;
+     }
+
+     .register-btn {
+         width: 100%;
+         padding: 12px;
+         background: #2c5f5f;
+         color: white;
+         border: none;
+         border-radius: 8px;
+         font-size: 16px;
+         font-weight: 600;
+         cursor: pointer;
+         transition: background 0.3s;
+         margin-bottom: 20px;
+     }
+
+     .register-btn:hover {
+         background: #1a4a4a;
+     }
+
+     .divider {
+         text-align: center;
+         color: #999;
+         margin: 20px 0;
+         position: relative;
+     }
+
+     .divider::before {
+         content: '';
+         position: absolute;
+         top: 50%;
+         left: 0;
+         right: 0;
+         height: 1px;
+         background: #ddd;
+     }
+
+     .divider span {
+         background: white;
+         padding: 0 15px;
+     }
+
+     .social-login {
+         display: flex;
+         flex-direction: column;
+         gap: 12px;
+     }
+
+     .social-btn {
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         gap: 10px;
+         padding: 12px;
+         border: 1px solid #ddd;
+         border-radius: 8px;
+         background: white;
+         cursor: pointer;
+         transition: all 0.3s;
+         text-decoration: none;
+         color: #333;
+         font-weight: 500;
+     }
+
+     .social-btn:hover {
+         background: #f8f9fa;
+         border-color: #ccc;
+     }
+
+     .terms {
+         text-align: center;
+         margin-top: 20px;
+         font-size: 12px;
+         color: #666;
+         line-height: 1.4;
+     }
+
+     .terms a {
+         color: #2c5f5f;
+         text-decoration: none;
+     }
+
+     .terms a:hover {
+         text-decoration: underline;
+     }
+    
+
+     @media (max-width: 768px) {
+         .header-content,
+         .nav-content {
+             flex-direction: column;
+             gap: 15px;
+         }
+
+         .nav-menu {
+             gap: 20px;
+         }
+
+         .name-row {
+             flex-direction: column;
+             gap: 0;
+         }
+
+         .footer-content {
+             grid-template-columns: 1fr;
+             gap: 30px;
+         }
+
+         .footer-bottom {
+             flex-direction: column;
+             gap: 15px;
+         }
+     }
+ </style>
+
+<main class="main-content">
+    <div class="register-container">
+        <h1 class="register-title">Create an Account</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="register-btn">CREATE</button>
+            <p style="text-align: center; margin-top: 10px;">
+                Already registered? <a href="{% url 'users:login' %}" style="color: #2c5f5f; text-decoration: none;">Click here to login</a>.
+            </p>
+        </form>
+        
+        <div class="divider">
+            <span>Or</span>
+        </div>
+        
+        <div class="social-login">
+            <a href="#" class="social-btn">
+                <span style="color: #4285f4;">G</span> Sign up with Google
+            </a>
+        </div>
+        
+        <p class="terms">
+            By signing up, you agree to our <a href="#terms">Terms</a> and <a href="#privacy">Privacy Policy</a>
+        </p>
+    </div>
+</main>
+{% endblock %}
+

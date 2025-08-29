@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Payment - MEOW{% endblock %}
+{% block content %}
+<main class="main-content" style="max-width:600px;margin:2rem auto;">
+    <h1 style="text-align:center;">Select Payment Method</h1>
+    <form method="post" action="{% url 'shop:payment_details' %}" style="background:lightgrey;padding:2rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);margin-bottom:2rem;">
+        {% csrf_token %}
+        <input type="hidden" name="total" value="{{ total }}">
+        <div style="display:flex;flex-wrap:wrap;gap:1.5rem 2rem;justify-content:center;">
+            {% for method, label, icon in payment_methods %}
+            <label style="display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;min-width:110px;">
+                <input type="radio" name="payment_method" value="{{ method }}" required style="margin-bottom:8px;">
+                <img src="{% static icon %}" alt="{{ label }}" style="height:32px;width:auto;">
+                <span>{{ label }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        <div style="margin-top:2rem;display:flex;justify-content:space-between;">
+            <a href="{% url 'shop:cart' %}" style="background:#ff6b35;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;text-decoration:none;">Back to Cart</a>
+            <button type="submit" style="background:#2c5f5f;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;border:none;cursor:pointer;">Next</button>
+        </div>
+    </form>
+</main>
+{% endblock %}

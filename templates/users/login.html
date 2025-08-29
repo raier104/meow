@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Login - MEOW{% endblock %}
+
+{% block content %}
+<style>
+    .main-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 40px 20px;
+    }
+
+    .login-container {
+        background: lightgrey;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .welcome-back {
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .login-title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label,
+    label[for="id_username"],
+    label[for="id_password"] {
+        font-weight: 700 !important;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: #222;
+        display: block;
+    }
+
+    .form-group input,
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 10px 9px;
+        border: 2px solid black;
+        border-radius: 10px;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.3s;
+        margin-bottom: 18px;
+    }
+
+    .form-group input:focus {
+        border-color: #2c5f5f;
+    }
+
+    .form-options {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        font-size: 14px;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .forgot-password {
+        color: #2c5f5f;
+        text-decoration: none;
+    }
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+    .login-btn {
+        display: block;
+        margin: 0 auto 20px;
+        width: 100%;
+        padding: 12px;
+        background: #2c5f5f;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .login-btn:hover {
+        background: #1a4a4a;
+    }
+
+    .divider {
+        text-align: center;
+        color: #999;
+        margin: 20px 0;
+        position: relative;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+    }
+
+    .divider span {
+        background: white;
+        padding: 0 15px;
+    }
+
+    .social-login {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+    }
+
+    .social-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .social-btn:hover {
+        background: #f8f9fa;
+        border-color: #ccc;
+    }
+
+    .create-account {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .create-account a {
+        color: #2c5f5f;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .create-account a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .header-content,
+        .nav-content {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-menu {
+            gap: 20px;
+        }
+
+        .footer-content {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<main class="main-content">
+    <div class="login-container">
+        <h1 class="login-title">Login in to your Account</h1>
+        {% if error %}
+            <div style="color:#b30000;background:#ffeaea;padding:10px 0 10px 0;margin-bottom:18px;border-radius:6px;text-align:center;font-weight:600;">
+                {{ error }}
+            </div>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <div class="divider">
+            <span>Or</span>
+        </div>
+        <div class="social-login">
+            <a href="#" class="social-btn">
+                <span style="color: #4285f4;">G</span> Sign in with Google
+            </a>
+        </div>
+        <p class="create-account">
+            New User? <a href="{% url 'users:register' %}">CREATE AN ACCOUNT</a>
+        </p>
+    </div>
+</main>
+{% endblock %}

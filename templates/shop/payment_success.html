@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Payment Successful - MEOW{% endblock %}
+{% block content %}
+<main class="main-content" style="max-width:600px;margin:2rem auto;">
+    <div style="background:lightgrey;padding:2rem 2rem 1.5rem 2rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+        <h1 style="color:#4caf50;margin-bottom:1rem;">Payment Successful</h1>
+        <p style="font-size:1.1rem;color:#444;">Thank you for your payment!</p>
+        <div id="receipt" style="margin:2rem auto 1.5rem auto;max-width:420px;text-align:left;background:#f8f9fa;padding:1.5rem;border-radius:10px;">
+            <div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:1rem;">
+                <span style="font-size:2.2rem;">🐾</span> MEOW
+            </div>
+            <div style="margin-bottom:1rem;">
+                <strong>Username:</strong> {{ user.username }}<br>
+                <strong>Email:</strong> {{ user.email }}<br>
+                <strong>Payment Method:</strong> {{ payment_method|title }}<br>
+                <strong>Amount:</strong> ${{ total|floatformat:2 }}
+            </div>
+            <div>
+                <strong>Products:</strong>
+                <ul style="margin:0 0 0 1.2rem;">
+                    {% for item in cart_items %}
+                        <li>{{ item.name }} - ${{ item.price }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div style="display:flex;justify-content:center;gap:1.5rem;">
+            <button onclick="printReceipt()" style="background:#2c5f5f;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;border:none;cursor:pointer;">Print Receipt</button>
+            <a href="{% url 'users:user_home_page' %}" style="background:#ff6b35;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;text-decoration:none;display:inline-block;">Go to Home</a>
+        </div>
+    </div>
+</main>
+<script>
+function printReceipt() {
+    var printContents = document.getElementById('receipt').innerHTML;
+    var win = window.open('', '', 'height=700,width=500');
+    win.document.write('<html><head><title>Receipt - MEOW</title>');
+    win.document.write('<style>body{font-family:sans-serif;padding:2rem;} ul{margin-left:1.2rem;}</style>');
+    win.document.write('</head><body>');
+    win.document.write(printContents);
+    win.document.write('</body></html>');
+    win.document.close();
+    win.print();
+}
+</script>
+{% endblock %}
