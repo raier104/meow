@@ -200,17 +200,24 @@
       }
 
       .pet-icon {
-          width: 80px;
-          height: 80px;
+          width: 160px;
+          height: 160px;
           background: #ff6b35;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           margin: 0 auto 0.5rem;
-          font-size: 2rem;
-          color: white;
+          overflow: hidden;
       }
+
+      .pet-icon img {
+          width: 130px;
+          height: 130px;
+          object-fit: contain;
+          display: block;
+      }
+      
 
       /* Vet Section */
       .vet-section {
@@ -338,7 +345,7 @@
     <section class="services">
         <div class="container">
             <div class="services-content">
-                <div class="services-image">🏥</div>
+                <div class="services-image"><img src="{% static 'images/kitten/a3f896ef342b7b2e74e4bbcd1966b20f.gif' %}" alt="Kittens" style="width: 220px; height: auto;"></div>
                 <div class="services-text">
                     <h2>Pet Daycare Services</h2>
                     <p>Professional care for your pets when you're away. Our experienced staff provides love, attention, and care your pets deserve.</p>
@@ -393,15 +400,15 @@
             <h2>Shop by pet</h2>
             <div class="pet-types">
                 <div class="pet-type">
-                    <div class="pet-icon">🐕</div>
+                    <div class="pet-icon"><img src="{% static 'images/kitten/dog.png' %}" alt="Description"></div>
                     <p>Dogs</p>
                 </div>
                 <div class="pet-type">
-                    <div class="pet-icon">🐱</div>
+                    <div class="pet-icon"><img src="{% static 'images/kitten/cat.png' %}" alt="Description"></div>
                     <p>Cats</p>
                 </div>
                 <div class="pet-type">
-                    <div class="pet-icon">🐦</div>
+                    <div class="pet-icon"><img src="{% static 'images/kitten/bird.png' %}" alt="Description"></div>
                     <p>Birds</p>
                 </div>
             </div>

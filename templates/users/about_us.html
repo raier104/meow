@@ -269,7 +269,11 @@
      .testimonial-avatar {
          width: 300px;
          height: 300px;
-         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><circle cx="150" cy="150" r="150" fill="%23fff"/><text x="150" y="160" text-anchor="middle" font-size="60" fill="%23666">👨</text></svg>') center/cover;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 50%;
+         background: none;
          border-radius: 50%;
      }
 
@@ -481,31 +485,61 @@
 <section class="testimonials-section">
     <div class="container">
         <div class="testimonial-content">
-            <div class="testimonial-text">
-                <h2>What people say about us</h2>
-                <div class="rating">
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
-                    <span class="star">★</span>
+            <div class="testimonial-slide active">
+                <div class="testimonial-image">
+                    <div class="testimonial-avatar"><img src="{% static 'images/kitten/shuvo.jpg' %}" alt="Cat" style="width: 260px; height: 260px; object-fit: cover; border-radius: 50%; box-shadow: 0 2px 12px rgba(0,0,0,0.10);"></div>
                 </div>
-                <div class="testimonial-quote">
-                    "After switching to their pet food, my cat is more energetic and healthier than ever. Truly grateful for such quality
-                    products."
-                </div>
-                <div class="testimonial-author">Building our dream</div>
-
-                <div class="testimonial-dots">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
+                <div class="testimonial-text">
+                    <h2>What people say about us</h2>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                    </div>
+                    <div class="testimonial-quote">
+                        "After switching to their pet food, my cat is more energetic and healthier than ever. Truly grateful for such quality products."
+                    </div>
+                    <div class="testimonial-author">Mahfujur Rahman Shuvo</div>
                 </div>
             </div>
-
-            <div class="testimonial-image">
-                <div class="testimonial-avatar"></div>
+            <div class="testimonial-slide">
+                <div class="testimonial-image">
+                    <div class="testimonial-avatar"><img src="{% static 'images/kitten/abid.jpg' %}" alt="Md. Raier Rahman Ove" style="width: 260px; height: 260px; object-fit: cover; border-radius: 50%; box-shadow: 0 2px 12px rgba(0,0,0,0.10);"></div>
+                </div>
+                <div class="testimonial-text">
+                    <h2>Customer Feedback</h2>
+                    <div class="rating">
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">★</span>
+                        <span class="star">☆</span>
+                    </div>
+                    <div class="testimonial-quote">
+                        "Great service and fast delivery. My pets love the new toys!"
+                    </div>
+                    <div class="testimonial-author">Bokhtiar Md. Abid</div>
+                </div>
             </div>
+            <div class="testimonial-dots">
+                <span class="dot active" onclick="showTestimonial(0)"></span>
+                <span class="dot" onclick="showTestimonial(1)"></span>
+            </div>
+        </div>
+        <script>
+        function showTestimonial(index) {
+            var slides = document.querySelectorAll('.testimonial-slide');
+            var dots = document.querySelectorAll('.testimonial-dots .dot');
+            slides.forEach(function(slide, i) {
+                slide.classList.toggle('active', i === index);
+            });
+            dots.forEach(function(dot, i) {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+        </script>
         </div>
     </div>
 </section>
