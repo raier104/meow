@@ -68,8 +68,11 @@
      .cat-image {
          width: 300px;
          height: 300px;
-         background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><circle cx="150" cy="150" r="150" fill="%23ddd"/><text x="150" y="160" text-anchor="middle" font-size="60" fill="%23666">🐱</text></svg>') center/cover;
+         display: flex;
+         align-items: center;
+         justify-content: center;
          border-radius: 50%;
+         background: none;
      }
 
      /* About Section */
@@ -382,7 +385,9 @@
             </div>
             <div class="hero-image">
                 <div class="cat-circle">
-                    <div class="cat-image"></div>
+                    <div class="cat-image">
+                        <img src="{% static 'images/kitten/about.png' %}" alt="Kittens" style="width: 300px; height: 300px; object-fit: contain; border-radius: 50%; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
+                    </div>
                 </div>
             </div>
         </div>
@@ -460,7 +465,7 @@
             <!-- Team Member 3 -->
             <div class="team-member">
                 <div class="member-image">
-                    <img src="{% static 'images/team_images/tausif.jpg' %}" alt="Md. Tausif Uddin">
+                    <img src="{% static 'images/team_images/IMG_0835.jpg' %}" alt="Md. Tausif Uddin">
                 </div>
                 <div class="member-info">
                     <div class="member-name">Md. Tausif Uddin</div>

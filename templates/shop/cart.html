@@ -17,7 +17,7 @@
                 {% for item in cart_items %}
                 <tr>
                     <td>{{ item.name }}</td>
-                    <td style="text-align:right;">${{ item.price }}</td>
+                    <td style="text-align:right;">{{ item.price }} TK</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -28,10 +28,10 @@
             <button type="button" onclick="applyCoupon()" style="background:#2c5f5f;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-left:10px;">Apply</button>
         </div>
         <div style="font-size:18px;font-weight:600;margin-bottom:1rem;">
-            Total: $<span id="total">{{ total|floatformat:2 }}</span>
+            Total: <span id="total">{{ total|floatformat:2 }}</span> TK
         </div>
         <div style="font-size:18px;font-weight:600;color:#2c5f5f;margin-bottom:2rem;"{% if not coupon or coupon == 0 %}display:none;{% endif %} id="discount-row">
-            Discounted Total: $<span id="discounted-total">{{ discounted_total|floatformat:2 }}</span>
+            Discounted Total: <span id="discounted-total">{{ discounted_total|floatformat:2 }}</span> TK
         </div>
         <input type="hidden" id="coupon-value" value="{{ coupon }}">
         <button type="button" onclick="goToPayment()" style="background:#ff6b35;color:#fff;padding:12px 32px;border:none;border-radius:20px;font-size:18px;font-weight:600;cursor:pointer;width:100%;">Go to Payment</button>
