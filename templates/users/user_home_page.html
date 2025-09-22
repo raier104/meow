@@ -76,6 +76,15 @@
           grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: 2rem;
       }
+      .category-grid a > div {
+          transition: box-shadow 0.3s cubic-bezier(.4,2,.6,1), transform 0.25s cubic-bezier(.4,2,.6,1);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      }
+      .category-grid a:hover > div {
+          box-shadow: 0 8px 32px rgba(255,107,53,0.18), 0 4px 16px rgba(0,0,0,0.12);
+          transform: translateY(-6px) scale(1.035);
+          z-index: 2;
+      }
 
       .featured-products {
           padding: 3rem 0;
@@ -290,22 +299,30 @@
         <div class="container">
             <h2>Browse by category</h2>
             <div class="category-grid">
-                <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-                    <img src="{% static 'images/shop/home/pet_food.jpg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
-                    <h3>Pet Food</h3>
-                </div>
-                <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-                    <img src="{% static 'images/shop/home/pet_toy.jpg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
-                    <h3>Pet Toy</h3>
-                </div>
-                <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-                    <img src="{% static 'images/shop/home/pet_cloth.jpg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
-                    <h3>Pet Cloth</h3>
-                </div>
-                <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
-                    <img src="{% static 'images/shop/home/pet_medicine.jpeg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
-                    <h3>Pet Medicine</h3>
-                </div>
+                                <a href="{% url 'shop:food' %}" style="text-decoration:none; color:inherit;">
+                                    <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+                                            <img src="{% static 'images/shop/home/pet_food.jpg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
+                                            <h3>Pet Food</h3>
+                                    </div>
+                                </a>
+                                <a href="{% url 'shop:toy' %}" style="text-decoration:none; color:inherit;">
+                                    <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+                                            <img src="{% static 'images/shop/home/pet_toy.jpg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
+                                            <h3>Pet Toy</h3>
+                                    </div>
+                                </a>
+                                <a href="{% url 'shop:cloth' %}" style="text-decoration:none; color:inherit;">
+                                    <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+                                            <img src="{% static 'images/shop/home/pet_cloth.jpg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
+                                            <h3>Pet Cloth</h3>
+                                    </div>
+                                </a>
+                                <a href="{% url 'shop:medicine' %}" style="text-decoration:none; color:inherit;">
+                                    <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+                                            <img src="{% static 'images/shop/home/pet_medicine.jpeg' %}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
+                                            <h3>Pet Medicine</h3>
+                                    </div>
+                                </a>
             </div>
         </div>
     </section>
