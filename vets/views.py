@@ -6,4 +6,6 @@ def index(request):
 
 def clinic_list(request):
     clinics = VetClinic.objects.all()
-    return render(request, "vets/clinic_list.html", {"clinics": clinics})
+    from daycare.models import Daycare
+    daycares = Daycare.objects.all()
+    return render(request, "vets/clinic_list.html", {"clinics": clinics, "daycares": daycares})
