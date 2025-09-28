@@ -6,7 +6,7 @@
     <h1 style="text-align:center;">Accessories</h1>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;">
         {% for carrier in carriers %}
-        <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;">
+        <div style="background:#fff;padding:1rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);text-align:center;transition:transform 0.3s, box-shadow 0.3s;cursor:pointer;" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='0 6px 15px rgba(0,0,0,0.15)';" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 8px rgba(0,0,0,0.07)';">
             <img src="{{ carrier.image.url }}" alt="{{ carrier.name }}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;">
             <h3>{{ carrier.name }}</h3>
             <p>{{ carrier.price }} Taka</p>
