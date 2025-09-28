@@ -28,6 +28,8 @@ urlpatterns = [
     path("", user_home_page, name="user_home_page"),
     path("about_us_view/", about_us_view, name="about_us"),
     path("contact_us_view/", contact_us_view, name="contact_us"),
+    path('accounts/', include('allauth.urls')),
+
 ]
 
 if settings.DEBUG:

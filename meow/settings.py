@@ -8,6 +8,14 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "django.contrib.admin","django.contrib.auth","django.contrib.contenttypes",
     "django.contrib.sessions","django.contrib.messages","django.contrib.staticfiles",
+    # required by allauth
+    "django.contrib.sites",
+   # allauth core
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    # Google provider
+    "allauth.socialaccount.providers.google",
     # custom apps
     "users","vets","shop","daycare",
 ]
@@ -20,6 +28,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "meow.urls"
@@ -63,5 +72,24 @@ LOGOUT_REDIRECT_URL = "/users/login/"
 
 # Dev email (notifications test)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",  # keep default
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# allauth basics
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"prompt": "select_account"},
+    }
+}
 
 

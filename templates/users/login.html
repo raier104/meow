@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load socialaccount %}
+
 {% block title %}Login - MEOW{% endblock %}
 
 {% block content %}
@@ -215,7 +217,7 @@
             <span>Or</span>
         </div>
         <div class="social-login">
-            <a href="#" class="social-btn">
+            <a href="{% provider_login_url 'google' %}" class="social-btn">
                 <span style="color: #4285f4;">G</span> Sign in with Google
             </a>
         </div>
