@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Category, Receipt
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, FileResponse, Http404
+from django.http import HttpResponseRedirect, FileResponse, Http404, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
@@ -14,33 +14,76 @@ def product_list(request):
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
 def cart(request):
-    cart_ids = request.session.get('cart', [])
+    cart = request.session.get('cart', {})
+    
+    # Handle migration from old list format to new dict format
+    if isinstance(cart, list):
+        # Convert old list format to new dict format
+        old_cart = cart
+        cart = {}
+        for product_id in old_cart:
+            cart[str(product_id)] = 1  # Set default quantity to 1
+        request.session['cart'] = cart
+        request.session.modified = True
+    
     cart_items = []
     total = 0
-    for pid in cart_ids:
+    
+    if request.method == "POST":
+        # Handle AJAX requests for quantity updates
+        if 'item_id' in request.POST:
+            item_id = request.POST.get('item_id')
+            quantity = int(request.POST.get('quantity', 1))
+            action = request.POST.get('action')
+            
+            if action == 'remove' or quantity <= 0:
+                if item_id in cart:
+                    del cart[item_id]
+            else:
+                if item_id in cart:
+                    cart[item_id] = quantity  # Store quantity directly
+            
+            request.session['cart'] = cart
+            request.session.modified = True
+            return JsonResponse({'status': 'success'})
+        
+        # Handle coupon application
+        if "set_coupon" in request.POST:
+            try:
+                coupon = float(request.POST.get("set_coupon", 0))
+                request.session['coupon'] = coupon
+            except Exception:
+                request.session['coupon'] = 0
+            return JsonResponse({'status': 'success'})
+    
+    # Prepare cart items for display
+    for item_id, quantity in cart.items():
         try:
-            product = Product.objects.get(id=int(pid))
-            cart_items.append({'name': product.name, 'price': product.price})
-            total += float(product.price)
+            product = Product.objects.get(id=int(item_id))
+            item_total = float(product.price) * quantity
+            
+            cart_items.append({
+                'id': item_id,
+                'name': product.name,
+                'price': float(product.price),
+                'quantity': quantity,
+                'total_price': item_total,
+            })
+            total += item_total
         except Product.DoesNotExist:
-            pass
+            continue
+    
     # Coupon logic
     coupon = request.session.get('coupon', 0)
-    if request.method == "POST" and "set_coupon" in request.POST:
-        try:
-            coupon = float(request.POST.get("set_coupon", 0))
-            request.session['coupon'] = coupon
-        except Exception:
-            request.session['coupon'] = 0
-        coupon = request.session.get('coupon', 0)
-    discounted_total = total
+    discounted_total = None
     if coupon:
         try:
             coupon = float(coupon)
             if 0 < coupon <= 100:
                 discounted_total = total * (1 - coupon / 100)
         except Exception:
-            discounted_total = total
+            discounted_total = None
+    
     return render(request, 'shop/cart.html', {
         'cart_items': cart_items,
         'total': total,
@@ -76,15 +119,19 @@ def medicine(request):
 
 def add_to_cart(request, product_id):
     if request.method == 'POST':
-        cart = request.session.get('cart', [])
-        product_id = int(product_id)
+        cart = request.session.get('cart', {})  # Change from list to dict
+        product_id_str = str(product_id)
+        
         # Only add if product exists
         try:
             product = Product.objects.get(id=product_id)
-            if product_id not in cart:
-                cart.append(product_id)
-                request.session['cart'] = cart
-                request.session.modified = True
+            if product_id_str in cart:
+                cart[product_id_str] += 1  # Increment quantity
+            else:
+                cart[product_id_str] = 1  # Set initial quantity
+            
+            request.session['cart'] = cart
+            request.session.modified = True
         except Product.DoesNotExist:
             pass
         return redirect('shop:cart')
@@ -184,17 +231,29 @@ def payment(request):
         ('visa', 'Visa', 'images/icon/visa.png'),
         ('mastercard', 'MasterCard', 'images/icon/card.png'),
     ]
-    cart_ids = request.session.get('cart', [])
-    cart_items = []
+    
+    cart = request.session.get('cart', {})
+    
+    # Handle migration from old list format to new dict format
+    if isinstance(cart, list):
+        old_cart = cart
+        cart = {}
+        for product_id in old_cart:
+            cart[str(product_id)] = 1
+        request.session['cart'] = cart
+        request.session.modified = True
+    
     total = 0
-    for pid in cart_ids:
+    
+    # Calculate total with quantities
+    for item_id, quantity in cart.items():
         try:
-            product = Product.objects.get(id=int(pid))
-            cart_items.append({'name': product.name, 'price': product.price})
-            total += float(product.price)
+            product = Product.objects.get(id=int(item_id))
+            total += float(product.price) * quantity
         except Product.DoesNotExist:
-            pass
-    # Coupon 
+            continue
+    
+    # Apply coupon
     coupon = request.session.get('coupon', 0)
     discounted_total = total
     if coupon:
@@ -204,6 +263,7 @@ def payment(request):
                 discounted_total = total * (1 - coupon / 100)
         except Exception:
             discounted_total = total
+    
     return render(request, "shop/payment.html", {
         "payment_methods": payment_methods,
         "total": discounted_total,
@@ -211,17 +271,28 @@ def payment(request):
 
 @csrf_exempt
 def payment_details(request):
-    cart_ids = request.session.get('cart', [])
-    cart_items = []
+    cart = request.session.get('cart', {})
+    
+    # Handle migration from old list format to new dict format
+    if isinstance(cart, list):
+        old_cart = cart
+        cart = {}
+        for product_id in old_cart:
+            cart[str(product_id)] = 1
+        request.session['cart'] = cart
+        request.session.modified = True
+    
     total = 0
-    for pid in cart_ids:
+    
+    # Calculate total with quantities
+    for item_id, quantity in cart.items():
         try:
-            product = Product.objects.get(id=int(pid))
-            cart_items.append({'name': product.name, 'price': product.price})
-            total += float(product.price)
+            product = Product.objects.get(id=int(item_id))
+            total += float(product.price) * quantity
         except Product.DoesNotExist:
-            pass
-    # Coupon
+            continue
+    
+    # Apply coupon
     coupon = request.session.get('coupon', 0)
     discounted_total = total
     if coupon:
@@ -231,12 +302,14 @@ def payment_details(request):
                 discounted_total = total * (1 - coupon / 100)
         except Exception:
             discounted_total = total
+    
     if request.method == "POST":
         method = request.POST.get("payment_method")
         return render(request, "shop/payment_details.html", {
             "method": method,
-            "total": discounted_total,
-            "cart_items": cart_items,
+            "total": total,
+            "discounted_total": discounted_total if coupon > 0 else None,
+            "coupon": coupon,
         })
     return redirect('shop:payment')
 
@@ -255,17 +328,37 @@ def download_receipt(request, receipt_id):
 
 @csrf_exempt
 def payment_success(request):
-    cart_ids = request.session.get('cart', [])
+    cart = request.session.get('cart', {})
+    
+    # Handle migration from old list format to new dict format
+    if isinstance(cart, list):
+        old_cart = cart
+        cart = {}
+        for product_id in old_cart:
+            cart[str(product_id)] = 1
+        request.session['cart'] = cart
+        request.session.modified = True
+    
     cart_items = []
     total = 0
-    for pid in cart_ids:
+    
+    # Calculate total with quantities
+    for item_id, quantity in cart.items():
         try:
-            product = Product.objects.get(id=int(pid))
-            cart_items.append({'name': product.name, 'price': product.price})
-            total += float(product.price)
+            product = Product.objects.get(id=int(item_id))
+            item_total = float(product.price) * quantity
+            
+            cart_items.append({
+                'name': product.name,
+                'price': float(product.price),
+                'quantity': quantity,
+                'total_price': item_total
+            })
+            total += item_total
         except Product.DoesNotExist:
-            pass
-    # Coupon 
+            continue
+    
+    # Apply coupon
     coupon = request.session.get('coupon', 0)
     discounted_total = total
     if coupon:
@@ -275,7 +368,12 @@ def payment_success(request):
                 discounted_total = total * (1 - coupon / 100)
         except Exception:
             discounted_total = total
-    request.session['cart'] = []
+    
+    # Clear cart after successful payment
+    request.session['cart'] = {}
+    request.session['coupon'] = 0
+    request.session.modified = True
+    
     payment_method = request.POST.get("payment_method") or request.GET.get("payment_method")
     user = request.user if request.user.is_authenticated else None
 
@@ -297,6 +395,7 @@ def payment_success(request):
         )
         receipt_instance.pdf.save(f"receipt_{receipt_instance.id}.pdf", pdf_file)
         receipt_instance.save()
+    
     return render(request, "shop/payment_success.html", {
         "user": user,
         "payment_method": payment_method,

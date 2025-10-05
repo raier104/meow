@@ -8,8 +8,13 @@
         <input type="hidden" name="payment_method" value="{{ method }}">
         <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
             <label style="font-size:1.1rem;font-weight:600;margin-right:12px;">Amount:</label>
-            <input type="text" name="amount" value="{{ total|floatformat:2 }}" readonly style="width:120px;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:1.1rem;text-align:right;background:#f8f9fa;">
+            <input type="text" name="amount" value="{% if discounted_total and coupon > 0 %}{{ discounted_total|floatformat:2 }}{% else %}{{ total|floatformat:2 }}{% endif %}" readonly style="width:120px;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:1.1rem;text-align:right;background:#f8f9fa;">
         </div>
+        {% if coupon and coupon > 0 %}
+        <div style="text-align:center;margin-bottom:1.5rem;color:#28a745;">
+            <small>Coupon {{ coupon }}% applied! Original: {{ total|floatformat:2 }} TK</small>
+        </div>
+        {% endif %}
         {% if method == "bkash" or method == "nagad" or method == "rocket" or method == "upay" or method == "pathao" %}
             <div style="margin-bottom:1.5rem;">
                 <label>Mobile Number</label>

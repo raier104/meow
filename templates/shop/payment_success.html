@@ -3,8 +3,8 @@
 {% block content %}
 <main class="main-content" style="max-width:600px;margin:2rem auto;">
     <div style="background:#fff;padding:1.5rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
-        <h1 style="color:#4caf50;margin-bottom:1rem;">Payment Successful</h1>
-        <p style="font-size:1.1rem;color:#444;">Thank you for your payment!</p>
+        <h1 style="color:#4caf50;margin-bottom:1rem; text-align: center;">Payment Successful</h1>
+        <p style="font-size:1.1rem;color:#444;text-align: center;">Thank you for your payment!</p>
         <div id="receipt" style="margin:2rem auto 1.5rem auto;max-width:420px;text-align:left;background:#f8f9fa;padding:1.5rem;border-radius:10px;">
             <div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:1rem;">
                 <span style="font-size:2.2rem;">🐾</span> MEOW
@@ -13,13 +13,13 @@
                 <strong>Username:</strong> {{ user.username }}<br>
                 <strong>Email:</strong> {{ user.email }}<br>
                 <strong>Payment Method:</strong> {{ payment_method|title }}<br>
-                <strong>Amount:</strong> ${{ total|floatformat:2 }}
+                <strong>Amount:</strong> {{ total|floatformat:2 }} TK
             </div>
             <div>
                 <strong>Products:</strong>
                 <ul style="margin:0 0 0 1.2rem;">
                     {% for item in cart_items %}
-                        <li>{{ item.name }} - ${{ item.price }}</li>
+                        <li>{{ item.name }} ({{ item.quantity }}x) - {{ item.total_price|floatformat:2 }} TK</li>
                     {% endfor %}
                 </ul>
             </div>

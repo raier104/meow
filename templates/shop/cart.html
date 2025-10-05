@@ -10,41 +10,152 @@
             <thead>
                 <tr style="border-bottom:1px solid #eee;">
                     <th style="text-align:left;padding-bottom:10px;">Item</th>
+                    <th style="text-align:center;padding-bottom:10px;">Quantity</th>
                     <th style="text-align:right;padding-bottom:10px;">Price</th>
+                    <th style="text-align:right;padding-bottom:10px;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in cart_items %}
-                <tr>
+                <tr id="item-{{ forloop.counter }}" data-unit-price="{{ item.price }}" data-item-id="{{ item.id }}">
                     <td>{{ item.name }}</td>
-                    <td style="text-align:right;">{{ item.price }} TK</td>
+                    <td style="text-align:center;">
+                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                            <button type="button" onclick="decreaseQuantity('{{ forloop.counter }}', '{{ item.price }}')" style="background:#ff6b35;color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">-</button>
+                            <span id="quantity-{{ forloop.counter }}" style="min-width:30px;text-align:center;font-weight:600;">{{ item.quantity|default:1 }}</span>
+                            <button type="button" onclick="increaseQuantity('{{ forloop.counter }}', '{{ item.price }}')" style="background:#2c5f5f;color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">+</button>
+                        </div>
+                    </td>
+                    <td style="text-align:right;">
+                        <span id="item-total-{{ forloop.counter }}">{{ item.total_price|floatformat:2 }}</span> TK
+                    </td>
+                    <td style="text-align:right;">
+                        <button type="button" onclick="removeItem('{{ forloop.counter }}')" style="background:#dc3545;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:12px;">🗑️</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         <div style="margin-bottom:1rem;">
             <label for="coupon" style="font-weight:500;">Coupon (%):</label>
-            <input type="number" id="coupon" name="coupon" min="0" max="100" style="padding:8px 12px;border-radius:6px;border:1px solid #ddd;width:120px;margin-left:10px;">
+            <input type="number" id="coupon" name="coupon" min="0" max="100" style="padding:8px 12px;border-radius:6px;border:1px solid #ddd;width:120px;margin-left:10px;" value="{{ coupon|default:'' }}">
             <button type="button" onclick="applyCoupon()" style="background:#2c5f5f;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-left:10px;">Apply</button>
         </div>
         <div style="font-size:18px;font-weight:600;margin-bottom:1rem;">
             Total: <span id="total">{{ total|floatformat:2 }}</span> TK
         </div>
-        <div style="font-size:18px;font-weight:600;color:#2c5f5f;margin-bottom:2rem;"{% if not coupon or coupon == 0 %}display:none;{% endif %} id="discount-row">
-            Discounted Total: <span id="discounted-total">{{ discounted_total|floatformat:2 }}</span> TK
+        {% if not coupon or coupon == 0 %}
+        <div id="discount-row" style="font-size:18px;font-weight:600;color:#2c5f5f;margin-bottom:2rem;display:none;">
+            Discounted Total: <span id="discounted-total">{% if discounted_total %}{{ discounted_total|floatformat:2 }}{% else %}0.00{% endif %}</span> TK
         </div>
-        <input type="hidden" id="coupon-value" value="{{ coupon }}">
+        {% else %}
+        <div id="discount-row" style="font-size:18px;font-weight:600;color:#2c5f5f;margin-bottom:2rem;">
+            Discounted Total: <span id="discounted-total">{% if discounted_total %}{{ discounted_total|floatformat:2 }}{% else %}0.00{% endif %}</span> TK
+        </div>
+        {% endif %}
+        <input type="hidden" id="coupon-value" value="{{ coupon|default:0 }}">
         <button type="button" onclick="goToPayment()" style="background:#ff6b35;color:#fff;padding:12px 32px;border:none;border-radius:20px;font-size:18px;font-weight:600;cursor:pointer;width:100%;">Go to Payment</button>
     </form>
 </main>
+
 <script>
+// Initialize item totals on page load
+document.addEventListener('DOMContentLoaded', function() {
+    var rows = document.querySelectorAll('tbody tr');
+    rows.forEach(function(row) {
+        var itemId = row.id.replace('item-', '');
+        var unitPrice = parseFloat(row.dataset.unitPrice);
+        var quantity = parseInt(document.getElementById('quantity-' + itemId).innerText);
+        updateItemTotal(itemId, unitPrice, quantity);
+    });
+    updateCartTotal();
+});
+
+function increaseQuantity(itemId, unitPrice) {
+    var quantityEl = document.getElementById('quantity-' + itemId);
+    var currentQuantity = parseInt(quantityEl.innerText);
+    var newQuantity = currentQuantity + 1;
+    
+    quantityEl.innerText = newQuantity;
+    updateItemTotal(itemId, unitPrice, newQuantity);
+    updateCartTotal();
+    
+    // Send AJAX request to update cart
+    updateCartItem(itemId, newQuantity, 'increase');
+}
+
+function decreaseQuantity(itemId, unitPrice) {
+    var quantityEl = document.getElementById('quantity-' + itemId);
+    var currentQuantity = parseInt(quantityEl.innerText);
+    
+    if (currentQuantity > 1) {
+        var newQuantity = currentQuantity - 1;
+        quantityEl.innerText = newQuantity;
+        updateItemTotal(itemId, unitPrice, newQuantity);
+        updateCartTotal();
+        
+        // Send AJAX request to update cart
+        updateCartItem(itemId, newQuantity, 'decrease');
+    }
+}
+
+function removeItem(itemId) {
+    if (confirm('Are you sure you want to remove this item from your cart?')) {
+        document.getElementById('item-' + itemId).remove();
+        updateCartTotal();
+        
+        // Send AJAX request to remove item
+        updateCartItem(itemId, 0, 'remove');
+    }
+}
+
+function updateItemTotal(itemId, unitPrice, quantity) {
+    var itemTotal = (unitPrice * quantity).toFixed(2);
+    document.getElementById('item-total-' + itemId).innerText = itemTotal;
+}
+
+function updateCartTotal() {
+    var total = 0;
+    var rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(function(row) {
+        var priceText = row.querySelector('[id^="item-total-"]').innerText;
+        var price = parseFloat(priceText.replace(' TK', ''));
+        total += price;
+    });
+    
+    document.getElementById('total').innerText = total.toFixed(2);
+    
+    // Reapply coupon if exists
+    var couponValue = document.getElementById('coupon').value;
+    if (couponValue && couponValue > 0) {
+        applyCoupon();
+    }
+}
+
+function updateCartItem(itemId, quantity, action) {
+    var row = document.getElementById('item-' + itemId);
+    var actualItemId = row.dataset.itemId;
+    
+    fetch("{% url 'shop:cart' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "item_id=" + actualItemId + "&quantity=" + quantity + "&action=" + action
+    });
+}
+
 function applyCoupon() {
     var coupon = parseFloat(document.getElementById('coupon').value);
     var total = parseFloat(document.getElementById('total').innerText);
+    
     if (!isNaN(coupon) && coupon > 0 && coupon <= 100) {
         var discounted = (total * (1 - coupon / 100)).toFixed(2);
         document.getElementById('discount-row').style.display = 'block';
         document.getElementById('discounted-total').innerText = discounted;
+        document.getElementById('coupon-value').value = coupon;
         // Save coupon in session via AJAX
         fetch("{% url 'shop:cart' %}", {
             method: "POST",
@@ -56,6 +167,8 @@ function applyCoupon() {
         });
     } else {
         document.getElementById('discount-row').style.display = 'none';
+        document.getElementById('discounted-total').innerText = '0.00';
+        document.getElementById('coupon-value').value = 0;
         fetch("{% url 'shop:cart' %}", {
             method: "POST",
             headers: {
@@ -66,6 +179,7 @@ function applyCoupon() {
         });
     }
 }
+
 function goToPayment() {
     window.location.href = "{% url 'shop:payment' %}";
 }
