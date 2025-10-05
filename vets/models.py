@@ -22,3 +22,13 @@ class TimeSlot(models.Model):
     end    = models.DateTimeField()
     is_available = models.BooleanField(default=True)
     def __str__(self): return f"{self.doctor.name} {self.start:%Y-%m-%d %H:%M}"
+
+class Appointment(models.Model):
+    patient = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE)
+    booked_at = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True)
+    
+    def __str__(self):
+        return f"{self.patient.username} - {self.doctor.name} on {self.time_slot.start:%Y-%m-%d %H:%M}"

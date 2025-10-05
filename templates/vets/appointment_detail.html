@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Appointment Confirmation{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin: 2rem auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="text-align:center; margin: 0; color: #2c5f5f;">Appointment Confirmed!</h1>
+    <a href="{% url 'vets:download_appointment' appointment.id %}" style="background:#ff6b35;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:600;">Download PDF</a>
+  </div>
+
+  <div style="background:#fff;padding:2rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <div style="background:#28a745;color:#fff;padding:1rem;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+        ✓
+      </div>
+      <h2 style="color:#28a745;margin:0;">Appointment Successfully Booked</h2>
+    </div>
+
+    <div style="border:1px solid #eee;border-radius:8px;padding:1.5rem;">
+      <h3 style="margin-top:0;color:#2c5f5f;">Dr. {{ appointment.doctor.name }}</h3>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div>
+          <strong style="color:#666;">Clinic:</strong>
+          <p style="margin:0.25rem 0;">{{ appointment.doctor.clinic.name }}</p>
+        </div>
+        <div>
+          <strong style="color:#666;">Specialization:</strong>
+          <p style="margin:0.25rem 0;">{{ appointment.doctor.specialization|default:"General" }}</p>
+        </div>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div>
+          <strong style="color:#666;">Appointment Date:</strong>
+          <p style="margin:0.25rem 0;">{{ appointment.time_slot.start|date:"F j, Y" }}</p>
+        </div>
+        <div>
+          <strong style="color:#666;">Time:</strong>
+          <p style="margin:0.25rem 0;">{{ appointment.time_slot.start|date:"g:i A" }} - {{ appointment.time_slot.end|date:"g:i A" }}</p>
+        </div>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div>
+          <strong style="color:#666;">Fee:</strong>
+          <p style="margin:0.25rem 0;color:#ff6b35;font-weight:600;">{{ appointment.doctor.fee }} TK</p>
+        </div>
+        <div>
+          <strong style="color:#666;">Booked On:</strong>
+          <p style="margin:0.25rem 0;">{{ appointment.booked_at|date:"F j, Y, g:i A" }}</p>
+        </div>
+      </div>
+      
+      <div style="margin-bottom:1rem;">
+        <strong style="color:#666;">Clinic Address:</strong>
+        <p style="margin:0.25rem 0;">{{ appointment.doctor.clinic.address }}</p>
+      </div>
+      
+      {% if appointment.doctor.clinic.phone %}
+      <div>
+        <strong style="color:#666;">Contact:</strong>
+        <p style="margin:0.25rem 0;">{{ appointment.doctor.clinic.phone }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="{% url 'vets:my_appointments' %}" style="background:#2c5f5f;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;margin-right:1rem;">View All Appointments</a>
+      <a href="{% url 'vets:clinic_doctor_list' %}" style="background:#6c757d;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">Book Another</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}My Appointments{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 2rem auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <h1 style="text-align:center; margin: 0;">My Appointments</h1>
+    {% if appointments %}
+    <a href="{% url 'vets:download_appointments' %}" style="background:#2c5f5f;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-weight:600;">Download All</a>
+    {% endif %}
+  </div>
+
+  {% if appointments %}
+    {% for appointment in appointments %}
+    <div style="background:#fff;margin-bottom:1rem;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border:1px solid #eee;">
+      <div style="padding:1rem;display:flex;justify-content:space-between;align-items:center;">
+        <div style="flex:1;">
+          <h4 style="margin:0;color:#2c5f5f;">Dr. {{ appointment.doctor.name }}</h4>
+          <p style="margin:0.25rem 0;color:#666;">{{ appointment.doctor.clinic.name }}</p>
+          <p style="margin:0.25rem 0;font-size:0.9rem;">{{ appointment.time_slot.start|date:"F j, Y, g:i A" }}</p>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-weight:600;color:#ff6b35;">{{ appointment.doctor.fee }} TK</span>
+          <div style="margin-top:0.5rem;">
+            <a href="{% url 'vets:appointment_detail' appointment.id %}" style="background:#2c5f5f;color:#fff;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:0.9rem;margin-right:0.5rem;">View</a>
+            <a href="{% url 'vets:download_appointment' appointment.id %}" style="background:#ff6b35;color:#fff;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:0.9rem;">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div style="background:#fff;padding:3rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);text-align:center;">
+      <p style="font-size:1.1rem;color:#666;margin-bottom:2rem;">You have no appointments booked.</p>
+      <a href="{% url 'vets:clinic_doctor_list' %}" class="cta-button" style="background:#ff6b35;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">Book an Appointment</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+       

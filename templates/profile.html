@@ -36,9 +36,14 @@
                 {% csrf_token %}
                 <button type="submit" style="background:#ff6b35;color:#fff;padding:12px 40px;font-size:1.1rem;border:none;border-radius:24px;font-weight:600;cursor:pointer;min-width:220px;text-align:center;width:220px;">Logout</button>
             </form>
+            <div style="display:flex; gap:1rem; width:100%; justify-content:center;">
                 <form action="{% url 'shop:previous_orders' %}" method="get" style="margin:0;">
-                    <button type="submit" style="background:#2c5f5f;color:#fff;padding:12px 40px;font-size:1.1rem;border:none;border-radius:24px;font-weight:600;cursor:pointer;min-width:220px;text-align:center;width:220px;">Previous Orders</button>
+                    <button type="submit" style="background:#2c5f5f;color:#fff;padding:12px 20px;font-size:1.1rem;border:none;border-radius:24px;font-weight:600;cursor:pointer;min-width:110px;text-align:center;">Previous Orders</button>
                 </form>
+                <form action="{% url 'vets:my_appointments' %}" method="get" style="margin:0;">
+                    <button type="submit" style="background:#2c5f5f;color:#fff;padding:12px 20px;font-size:1.1rem;border:none;border-radius:24px;font-weight:600;cursor:pointer;min-width:110px;text-align:center;">Booked Appointments</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

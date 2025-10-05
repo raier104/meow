@@ -1,24 +1,145 @@
 from django.shortcuts import render
-from .models import VetClinic, Doctor, TimeSlot
+from .models import VetClinic, Doctor, TimeSlot, Appointment
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.units import inch
+from io import BytesIO
 
 def clinic_doctor_list(request):
     clinics = VetClinic.objects.all()
     return render(request, "vets/clinic_doctor_list.html", {"clinics": clinics})
 
+@login_required
 def book_appointment(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
     timeslots = TimeSlot.objects.filter(doctor=doctor, is_available=True)
     if request.method == "POST":
-        # Here you would create an Appointment object, mark slot as booked, etc.
         slot_id = request.POST.get("time")
         slot = get_object_or_404(TimeSlot, id=slot_id, doctor=doctor, is_available=True)
+        
+        # Create appointment record
+        appointment = Appointment.objects.create(
+            patient=request.user,
+            doctor=doctor,
+            time_slot=slot
+        )
+        
+        # Mark slot as unavailable
         slot.is_available = False
         slot.save()
-        messages.success(request, "Appointment booked!")
-        return redirect("vets:clinic_doctor_list")
+        
+        messages.success(request, "Appointment booked successfully!")
+        return redirect("vets:appointment_detail", appointment_id=appointment.id)
     return render(request, "vets/book_appointment.html", {"doctor": doctor, "timeslots": timeslots})
+
+@login_required
+def my_appointments(request):
+    appointments = Appointment.objects.filter(patient=request.user).order_by('-booked_at')
+    return render(request, "vets/my_appointments.html", {"appointments": appointments})
+
+@login_required
+def appointment_detail(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id, patient=request.user)
+    return render(request, "vets/appointment_detail.html", {"appointment": appointment})
+
+@login_required
+def download_appointments(request):
+    appointments = Appointment.objects.filter(patient=request.user).order_by('-booked_at')
+    
+    # Create PDF buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+    
+    # Title
+    title = Paragraph(f"Veterinary Appointments - {request.user.get_full_name() or request.user.username}", styles['Title'])
+    story.append(title)
+    story.append(Spacer(1, 12))
+    
+    # User info
+    user_info = f"<b>Patient:</b> {request.user.get_full_name() or request.user.username}<br/>"
+    user_info += f"<b>Email:</b> {request.user.email}<br/>"
+    from django.utils import timezone
+    user_info += f"<b>Generated on:</b> {timezone.now().strftime('%B %d, %Y, %I:%M %p')}"
+    story.append(Paragraph(user_info, styles['Normal']))
+    story.append(Spacer(1, 20))
+    
+    # Appointments
+    for appointment in appointments:
+        apt_text = f"<b>Dr. {appointment.doctor.name}</b><br/>"
+        apt_text += f"<b>Clinic:</b> {appointment.doctor.clinic.name}<br/>"
+        apt_text += f"<b>Specialization:</b> {appointment.doctor.specialization}<br/>"
+        apt_text += f"<b>Date & Time:</b> {appointment.time_slot.start.strftime('%B %d, %Y, %I:%M %p')} - {appointment.time_slot.end.strftime('%I:%M %p')}<br/>"
+        apt_text += f"<b>Fee:</b> {appointment.doctor.fee} TK<br/>"
+        apt_text += f"<b>Address:</b> {appointment.doctor.clinic.address}<br/>"
+        if appointment.doctor.clinic.phone:
+            apt_text += f"<b>Phone:</b> {appointment.doctor.clinic.phone}<br/>"
+        apt_text += f"<b>Booked on:</b> {appointment.booked_at.strftime('%B %d, %Y, %I:%M %p')}"
+        
+        story.append(Paragraph(apt_text, styles['Normal']))
+        story.append(Spacer(1, 20))
+    
+    if not appointments:
+        story.append(Paragraph("No appointments found.", styles['Normal']))
+    
+    # Build PDF
+    doc.build(story)
+    buffer.seek(0)
+    
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="my_appointments_{request.user.username}.pdf"'
+    return response
+
+@login_required
+def download_appointment(request, appointment_id):
+    appointment = get_object_or_404(Appointment, id=appointment_id, patient=request.user)
+    
+    # Create PDF buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+    
+    # Title
+    title = Paragraph(f"Appointment Confirmation - {request.user.get_full_name() or request.user.username}", styles['Title'])
+    story.append(title)
+    story.append(Spacer(1, 12))
+    
+    # User info
+    user_info = f"<b>Patient:</b> {request.user.get_full_name() or request.user.username}<br/>"
+    user_info += f"<b>Email:</b> {request.user.email}<br/>"
+    from django.utils import timezone
+    user_info += f"<b>Generated on:</b> {timezone.now().strftime('%B %d, %Y, %I:%M %p')}"
+    story.append(Paragraph(user_info, styles['Normal']))
+    story.append(Spacer(1, 20))
+    
+    # Appointment details
+    apt_text = f"<b>Dr. {appointment.doctor.name}</b><br/>"
+    apt_text += f"<b>Clinic:</b> {appointment.doctor.clinic.name}<br/>"
+    apt_text += f"<b>Specialization:</b> {appointment.doctor.specialization}<br/>"
+    apt_text += f"<b>Date & Time:</b> {appointment.time_slot.start.strftime('%B %d, %Y, %I:%M %p')} - {appointment.time_slot.end.strftime('%I:%M %p')}<br/>"
+    apt_text += f"<b>Fee:</b> {appointment.doctor.fee} TK<br/>"
+    apt_text += f"<b>Address:</b> {appointment.doctor.clinic.address}<br/>"
+    if appointment.doctor.clinic.phone:
+        apt_text += f"<b>Phone:</b> {appointment.doctor.clinic.phone}<br/>"
+    apt_text += f"<b>Booked on:</b> {appointment.booked_at.strftime('%B %d, %Y, %I:%M %p')}"
+    
+    story.append(Paragraph(apt_text, styles['Normal']))
+    
+    # Build PDF
+    doc.build(story)
+    buffer.seek(0)
+    
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="appointment_{appointment.id}_{request.user.username}.pdf"'
+    return response
 
 def index(request):
     return render(request, "vets/index.html")

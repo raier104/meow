@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>My Appointments - {{ user.get_full_name|default:user.username }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #2c5f5f; text-align: center; margin-bottom: 30px; }
+        .appointment { border: 1px solid #ddd; margin-bottom: 20px; padding: 15px; border-radius: 8px; }
+        .appointment h3 { color: #ff6b35; margin-top: 0; }
+        .info { margin: 5px 0; }
+        .header { text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>My Veterinary Appointments</h1>
+        <p><strong>Patient:</strong> {{ user.get_full_name|default:user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+    
+    {% for appointment in appointments %}
+    <div class="appointment">
+        <h3>Dr. {{ appointment.doctor.name }}</h3>
+        <div class="info"><strong>Clinic:</strong> {{ appointment.doctor.clinic.name }}</div>
+        <div class="info"><strong>Specialization:</strong> {{ appointment.doctor.specialization }}</div>
+        <div class="info"><strong>Date & Time:</strong> {{ appointment.time_slot.start|date:"F j, Y, g:i A" }} - {{ appointment.time_slot.end|date:"g:i A" }}</div>
+        <div class="info"><strong>Fee:</strong> {{ appointment.doctor.fee }} TK</div>
+        <div class="info"><strong>Address:</strong> {{ appointment.doctor.clinic.address }}</div>
+        {% if appointment.doctor.clinic.phone %}
+        <div class="info"><strong>Phone:</strong> {{ appointment.doctor.clinic.phone }}</div>
+        {% endif %}
+        <div class="info"><strong>Booked on:</strong> {{ appointment.booked_at|date:"F j, Y, g:i A" }}</div>
+    </div>
+    {% empty %}
+    <p style="text-align: center;">No appointments found.</p>
+    {% endfor %}
+</body>
+</html>
+</html>
