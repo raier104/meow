@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import VetClinic, Doctor, TimeSlot
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+
 def clinic_doctor_list(request):
     clinics = VetClinic.objects.all()
     return render(request, "vets/clinic_doctor_list.html", {"clinics": clinics})
