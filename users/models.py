@@ -7,7 +7,6 @@ USER_TYPE_CHOICES = (
     ('clinic', 'Clinic'),
     ('seller', 'Seller'),
     ('admin', 'Admin'),
-
 )
 class CustomUser(AbstractUser):
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='user')

@@ -2,7 +2,7 @@ from django.db import models
 from users.models import CustomUser  # Correct import
 
 class VetClinic(models.Model):
-    owner   = models.ForeignKey(CustomUser, on_delete=models.CASCADE, limit_choices_to={'user_type': 'clinic'})
+    owner   = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name    = models.CharField(max_length=200)
     address = models.TextField()
     map_link= models.URLField(blank=True)
