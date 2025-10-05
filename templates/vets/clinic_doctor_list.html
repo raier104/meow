@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Vet Clinics & Doctors{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 1100px; margin: 2rem auto;">
+  <h1 style="text-align:center;">Vet Clinics & Doctors</h1>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;">
+    {% for clinic in clinics %}
+    <div style="background:#fff;padding:1.5rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+      <h2 style="margin-bottom:0.5rem;">{{ clinic.name }}</h2>
+      <p style="margin-bottom:0.5rem;">{{ clinic.address }}</p>
+      <p style="margin-bottom:0.5rem;">Phone: {{ clinic.phone }}</p>
+      {% if clinic.map_link %}
+      <a href="{{ clinic.map_link }}" target="_blank" style="color:#1877f2;">View on map</a>
+      {% endif %}
+      <h4 style="margin-top:1.5rem;">Doctors:</h4>
+      <ul style="padding-left:1.2rem;">
+        {% for doctor in clinic.doctor_set.all %}
+        <li style="margin-bottom:0.5rem;">
+          <strong>{{ doctor.name }}</strong>
+          {% if doctor.specialization %} - {{ doctor.specialization }}{% endif %}
+          <span style="color:#ff6b35;"> (Fee: {{ doctor.fee }} TK)</span>
+          <a href="{% url 'vets:book_appointment' doctor.id %}" style="margin-left:1rem; background:#ff6b35;color:#fff;padding:4px 14px;border-radius:8px;text-decoration:none;font-size:0.95rem;">Book</a>
+        </li>
+        {% empty %}
+        <li>No doctors listed.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% empty %}
+    <p>No vet clinics found.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
