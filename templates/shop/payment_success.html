@@ -31,15 +31,20 @@
                     <div><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</div>
                     <div><strong>Email:</strong> {{ user.email }}</div>
                     <div><strong>Payment Method:</strong> {{ payment_method|title }}</div>
-                </div>
             </div>
+            </div>
+            <style>
+            .bg1 { background-color: #fff; }
+            .bg2 { background-color: #f8f9fa; }
+            </style>
 
             <!-- Order Summary -->
-            <div style="margin-bottom:2rem;">
+                    {% cycle 'bg1' 'bg2' as rowcolor %}
+                    <div class="{{ rowcolor }}" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid #f0f0f0;">
                 <h3 style="color:#2c5f5f;margin:0 0 1rem 0;font-size:1.2rem;">Order Summary</h3>
                 <div style="border:1px solid #e9ecef;border-radius:8px;overflow:hidden;">
                     {% for item in cart_items %}
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid #f0f0f0;background:{% cycle '#fff' '#f8f9fa' %};">
+                    <div class="{% cycle 'bg1' 'bg2' %}" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid #f0f0f0;">
                         <div>
                             <div style="font-weight:600;color:#2c5f5f;">{{ item.name }}</div>
                             <div style="color:#666;font-size:0.9rem;">{{ item.price }} TK × {{ item.quantity }}</div>

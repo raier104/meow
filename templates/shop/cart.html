@@ -74,9 +74,15 @@
                     <div style="font-size:1.3rem;font-weight:600;color:#666;margin-bottom:0.5rem;">
                         Subtotal: <span id="total" style="color:#2c5f5f;">{{ total|floatformat:2 }}</span> TK
                     </div>
-                    <div id="discount-row" style="font-size:1.3rem;font-weight:600;color:#28a745;margin-bottom:1rem;{% if not coupon or coupon == 0 %}display:none;{% endif %}">
+                    {% if not coupon or coupon == 0 %}
+                    <div id="discount-row" style="font-size:1.3rem;font-weight:600;color:#28a745;margin-bottom:1rem;display:none;">
                         Final Total: <span id="discounted-total">{% if discounted_total %}{{ discounted_total|floatformat:2 }}{% else %}0.00{% endif %}</span> TK
                     </div>
+                    {% else %}
+                    <div id="discount-row" style="font-size:1.3rem;font-weight:600;color:#28a745;margin-bottom:1rem;">
+                        Final Total: <span id="discounted-total">{% if discounted_total %}{{ discounted_total|floatformat:2 }}{% else %}0.00{% endif %}</span> TK
+                    </div>
+                    {% endif %}
                     <button type="button" onclick="goToPayment()" style="background:linear-gradient(135deg, #ff6b35 0%, #2c5f5f 100%);color:#fff;padding:16px 40px;border:none;border-radius:25px;font-size:1.2rem;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(255,107,53,0.3);transition:all 0.3s;">
                         🛒 Proceed to Checkout
                     </button>
