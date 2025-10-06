@@ -23,30 +23,9 @@
           Map
         </a>
         {% endif %}
-        <button onclick="toggleDoctors('clinic-{{ clinic.id }}')" style="background:#ff6b35;color:#fff;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:0.9rem;flex:1;">
+        <a href="{% url 'vets:clinic_detail' clinic.id %}" style="background:#ff6b35;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.9rem;flex:1;text-align:center;">
           View Details
-        </button>
-      </div>
-      
-      <!-- Hidden details section -->
-      <div id="clinic-{{ clinic.id }}" style="display:none;margin-top:1.5rem;border-top:1px solid #eee;padding-top:1rem;">
-        <h4 style="margin-bottom:1rem;color:#2c5f5f;">Available Doctors:</h4>
-        {% for doctor in clinic.doctor_set.all %}
-        <div style="background:#f8f9fa;padding:1rem;margin-bottom:0.5rem;border-radius:8px;border-left:4px solid #ff6b35;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;">
-            <div>
-              <strong style="color:#2c5f5f;">Dr. {{ doctor.name }}</strong>
-              {% if doctor.specialization %}
-              <p style="margin:0.25rem 0;color:#666;font-size:0.9rem;">{{ doctor.specialization }}</p>
-              {% endif %}
-              <p style="margin:0.25rem 0;color:#ff6b35;font-weight:600;">Fee: {{ doctor.fee }} TK</p>
-            </div>
-            <a href="{% url 'vets:book_appointment' doctor.id %}" style="background:#2c5f5f;color:#fff;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:0.85rem;margin-top:0.5rem;">Book Appointment</a>
-          </div>
-        </div>
-        {% empty %}
-        <p style="color:#666;font-style:italic;">No doctors available at this clinic.</p>
-        {% endfor %}
+        </a>
       </div>
     </div>
     {% empty %}
@@ -56,21 +35,5 @@
     {% endfor %}
   </div>
 </div>
-
-<script>
-function toggleDoctors(clinicId) {
-  var doctorsDiv = document.getElementById(clinicId);
-  var button = event.target;
-  
-  if (doctorsDiv.style.display === 'none' || doctorsDiv.style.display === '') {
-    doctorsDiv.style.display = 'block';
-    button.innerHTML = 'Hide Details';
-    button.style.background = '#6c757d';
-  } else {
-    doctorsDiv.style.display = 'none';
-    button.innerHTML = 'View Details';
-    button.style.background = '#ff6b35';
-  }
-}
-</script>
 {% endblock %}
+             

@@ -3,40 +3,96 @@ from .models import VetClinic, Doctor, TimeSlot, Appointment
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.units import inch
 from io import BytesIO
+from datetime import datetime
+import json
 
 def clinic_doctor_list(request):
     clinics = VetClinic.objects.all()
     return render(request, "vets/clinic_doctor_list.html", {"clinics": clinics})
 
+def clinic_detail(request, clinic_id):
+    clinic = get_object_or_404(VetClinic, id=clinic_id)
+    doctors = clinic.doctor_set.all()
+    return render(request, "vets/clinic_detail.html", {"clinic": clinic, "doctors": doctors})
+
 @login_required
 def book_appointment(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
-    timeslots = TimeSlot.objects.filter(doctor=doctor, is_available=True)
+    timeslots = TimeSlot.objects.filter(doctor=doctor, is_available=True).order_by('start')
+    
     if request.method == "POST":
         slot_id = request.POST.get("time")
-        slot = get_object_or_404(TimeSlot, id=slot_id, doctor=doctor, is_available=True)
         
-        # Create appointment record
-        appointment = Appointment.objects.create(
-            patient=request.user,
-            doctor=doctor,
-            time_slot=slot
-        )
+        # Check if slot_id exists and is valid
+        if not slot_id:
+            messages.error(request, "Please select a time slot.")
+            return render(request, "vets/book_appointment.html", {"doctor": doctor, "timeslots": timeslots})
         
-        # Mark slot as unavailable
-        slot.is_available = False
-        slot.save()
-        
-        messages.success(request, "Appointment booked successfully!")
-        return redirect("vets:appointment_detail", appointment_id=appointment.id)
+        try:
+            slot = get_object_or_404(TimeSlot, id=slot_id, doctor=doctor, is_available=True)
+            
+            # Create appointment record
+            appointment = Appointment.objects.create(
+                patient=request.user,
+                doctor=doctor,
+                time_slot=slot
+            )
+            
+            # Mark slot as unavailable
+            slot.is_available = False
+            slot.save()
+            
+            messages.success(request, "Appointment booked successfully!")
+            return redirect("vets:appointment_detail", appointment_id=appointment.id)
+            
+        except Exception as e:
+            messages.error(request, "The selected time slot is no longer available. Please choose another slot.")
+            return render(request, "vets/book_appointment.html", {"doctor": doctor, "timeslots": timeslots})
+    
     return render(request, "vets/book_appointment.html", {"doctor": doctor, "timeslots": timeslots})
+
+def get_time_slots(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+    selected_date = request.GET.get('date')
+    
+    if not selected_date:
+        return JsonResponse({'timeslots': []})
+    
+    try:
+        # Parse the date
+        date_obj = datetime.strptime(selected_date, '%Y-%m-%d').date()
+        
+        # Get time slots for the selected date
+        timeslots = TimeSlot.objects.filter(
+            doctor=doctor,
+            is_available=True,
+            start__date=date_obj
+        ).order_by('start')
+        
+        # Format the time slots for JSON response
+        slots_data = []
+        for slot in timeslots:
+            slots_data.append({
+                'id': slot.id,
+                'start_time': slot.start.strftime('%H:%M'),
+                'end_time': slot.end.strftime('%H:%M'),
+                'start_datetime': slot.start.isoformat(),
+                'end_datetime': slot.end.isoformat()
+            })
+        
+        return JsonResponse({'timeslots': slots_data})
+        
+    except ValueError:
+        return JsonResponse({'timeslots': [], 'error': 'Invalid date format'})
+    except Exception as e:
+        return JsonResponse({'timeslots': [], 'error': str(e)})
 
 @login_required
 def my_appointments(request):

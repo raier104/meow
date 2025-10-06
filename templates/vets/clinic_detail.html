@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ clinic.name }} - Vet Clinic{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 2rem auto;">
+  <div style="margin-bottom: 2rem;">
+    <a href="{% url 'vets:clinic_doctor_list' %}" style="background:#6c757d;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.9rem;">← Back to Clinics</a>
+  </div>
+  
+  <div style="background:#fff;padding:2rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+    <h1 style="color:#2c5f5f;margin-bottom:1.5rem;">{{ clinic.name }}</h1>
+    
+    <!-- Clinic Information -->
+    <div style="background:#f8f9fa;padding:1.5rem;border-radius:8px;margin-bottom:2rem;">
+      <h3 style="color:#2c5f5f;margin-bottom:1rem;">Clinic Information</h3>
+      <p style="margin:0.5rem 0;"><strong>Address:</strong> {{ clinic.address }}</p>
+      {% if clinic.phone %}
+      <p style="margin:0.5rem 0;"><strong>Phone:</strong> {{ clinic.phone }}</p>
+      {% endif %}
+      {% if clinic.map_link %}
+      <div style="margin-top:1rem;">
+        <a href="{{ clinic.map_link }}" target="_blank" style="background:#2c5f5f;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.9rem;display:inline-flex;align-items:center;gap:8px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+          View on Map
+        </a>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Doctors Section -->
+    <div>
+      <h3 style="color:#2c5f5f;margin-bottom:1.5rem;">Available Doctors ({{ doctors.count }})</h3>
+      
+      {% if doctors %}
+        <div style="display:grid;gap:1rem;">
+          {% for doctor in doctors %}
+          <div style="background:#fff;border:1px solid #eee;padding:1.5rem;border-radius:8px;border-left:4px solid #ff6b35;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+              <div style="flex:1;">
+                <h4 style="margin:0 0 0.5rem 0;color:#2c5f5f;">Dr. {{ doctor.name }}</h4>
+                {% if doctor.specialization %}
+                <p style="margin:0 0 0.5rem 0;color:#666;font-size:0.95rem;"><strong>Specialization:</strong> {{ doctor.specialization }}</p>
+                {% endif %}
+                <p style="margin:0;color:#ff6b35;font-weight:600;font-size:1.1rem;">Consultation Fee: {{ doctor.fee }} TK</p>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <a href="{% url 'vets:book_appointment' doctor.id %}" style="background:#ff6b35;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;text-align:center;white-space:nowrap;">Book Appointment</a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="text-align:center;padding:2rem;background:#f8f9fa;border-radius:8px;">
+          <p style="color:#666;font-size:1.1rem;">No doctors are currently available at this clinic.</p>
+          <p style="color:#999;font-size:0.9rem;">Please check back later or contact the clinic directly.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
