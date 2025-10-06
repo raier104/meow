@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
 import io
 from xhtml2pdf import pisa
+from django.db.models import Q
 
 def product_list(request):
     return render(request, "shop/product_list.html", {"products": Product.objects.all()})
@@ -402,3 +403,19 @@ def payment_success(request):
         "total": discounted_total,
         "cart_items": cart_items,
     })
+
+def search_products(request):
+    query = request.GET.get('q', '')
+    products = []
+    
+    if query:
+        products = Product.objects.filter(
+            Q(name__icontains=query) | 
+            Q(category__name__icontains=query)
+        ).distinct()
+    
+    context = {
+        'products': products,
+        'query': query,
+    }
+    return render(request, 'shop/search_results.html', context)

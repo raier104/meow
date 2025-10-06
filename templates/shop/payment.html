@@ -1,25 +1,77 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Payment - MEOW{% endblock %}
+{% block title %}Payment Method - MEOW{% endblock %}
 {% block content %}
-<main class="main-content" style="max-width:600px;margin:2rem auto;">
-    <h1 style="text-align:center;">Select Payment Method</h1>
-    <form method="post" action="{% url 'shop:payment_details' %}" style="background:#fff;padding:1.5rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
-        {% csrf_token %}
-        <input type="hidden" name="total" value="{{ total }}">
-        <div style="display:flex;flex-wrap:wrap;gap:1.5rem 2rem;justify-content:center;">
-            {% for method, label, icon in payment_methods %}
-            <label style="display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;min-width:110px;">
-                <input type="radio" name="payment_method" value="{{ method }}" required style="margin-bottom:8px;">
-                <img src="{% static icon %}" alt="{{ label }}" style="height:32px;width:auto;">
-                <span>{{ label }}</span>
-            </label>
-            {% endfor %}
+<div style="max-width:700px;margin:2rem auto;padding:0 20px;">
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:2rem;">
+        <h1 style="color:#2c5f5f;font-size:2.2rem;margin-bottom:0.5rem;display:flex;align-items:center;justify-content:center;gap:12px;">
+            <svg width="32" height="32" fill="#ff6b35" viewBox="0 0 24 24">
+                <path d="M20 4H4C2.89 4 2 4.89 2 6V18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4ZM20 18H4V8H20V18ZM4 6H20V7H4V6Z"/>
+            </svg>
+            Choose Payment Method
+        </h1>
+        <p style="color:#666;font-size:1.1rem;">Select your preferred payment option</p>
+    </div>
+
+    <!-- Payment Card -->
+    <div style="background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);overflow:hidden;">
+        <!-- Amount Summary -->
+        <div style="background:linear-gradient(135deg, #2c5f5f 0%, #ff6b35 100%);padding:2rem;color:#fff;text-align:center;">
+            <h3 style="margin:0;font-size:1.1rem;opacity:0.9;">Total Amount</h3>
+            <div style="font-size:2.5rem;font-weight:700;margin:0.5rem 0;">{{ total|floatformat:2 }} <span style="font-size:1.5rem;">TK</span></div>
         </div>
-        <div style="margin-top:2rem;display:flex;justify-content:space-between;">
-            <a href="{% url 'shop:cart' %}" style="background:#ff6b35;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;text-decoration:none;">Back to Cart</a>
-            <button type="submit" style="background:#2c5f5f;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;border:none;cursor:pointer;">Next</button>
-        </div>
-    </form>
-</main>
+
+        <!-- Payment Methods Form -->
+        <form method="post" action="{% url 'shop:payment_details' %}" style="padding:2rem;">
+            {% csrf_token %}
+            <input type="hidden" name="total" value="{{ total }}">
+            
+            <h3 style="color:#2c5f5f;margin-bottom:1.5rem;font-size:1.3rem;">Payment Options</h3>
+            
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;">
+                {% for method, label, icon in payment_methods %}
+                <label style="display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;border:2px solid #e9ecef;border-radius:12px;cursor:pointer;transition:all 0.3s;background:#f8f9fa;" class="payment-option">
+                    <input type="radio" name="payment_method" value="{{ method }}" required style="display:none;">
+                    <img src="{% static icon %}" alt="{{ label }}" style="height:40px;width:auto;margin-bottom:8px;">
+                    <span style="font-size:0.9rem;font-weight:600;color:#666;text-align:center;">{{ label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div style="display:flex;justify-content:space-between;margin-top:2rem;gap:1rem;">
+                <a href="{% url 'shop:cart' %}" style="background:#6c757d;color:#fff;padding:12px 32px;border-radius:25px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:8px;">
+                    ← Back to Cart
+                </a>
+                <button type="submit" style="background:linear-gradient(135deg, #ff6b35 0%, #2c5f5f 100%);color:#fff;padding:12px 32px;border-radius:25px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                    Continue →
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.payment-option:hover {
+    border-color: #ff6b35;
+    background: #fff5f2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,107,53,0.2);
+}
+
+.payment-option input:checked + img {
+    filter: drop-shadow(0 0 8px rgba(255,107,53,0.5));
+}
+
+.payment-option input:checked ~ span {
+    color: #ff6b35;
+}
+
+.payment-option:has(input:checked) {
+    border-color: #ff6b35;
+    background: #fff5f2;
+    box-shadow: 0 4px 12px rgba(255,107,53,0.2);
+}
+</style>
 {% endblock %}

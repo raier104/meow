@@ -1,62 +1,98 @@
 {% extends "base.html" %}
-
-{% block title %}Your Cart{% endblock %}
-
+{% block title %}Your Cart - MEOW{% endblock %}
 {% block content %}
-<main class="main-content" style="max-width:600px;margin:2rem auto;">
-    <h1 style="text-align:center;">Your Cart</h1>
-    <form id="cart-form" style="background:#fff;padding:1.5rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
-        <table style="width:100%;margin-bottom:2rem;">
-            <thead>
-                <tr style="border-bottom:1px solid #eee;">
-                    <th style="text-align:left;padding-bottom:10px;">Item</th>
-                    <th style="text-align:center;padding-bottom:10px;">Quantity</th>
-                    <th style="text-align:right;padding-bottom:10px;">Price</th>
-                    <th style="text-align:right;padding-bottom:10px;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in cart_items %}
-                <tr id="item-{{ forloop.counter }}" data-unit-price="{{ item.price }}" data-item-id="{{ item.id }}">
-                    <td>{{ item.name }}</td>
-                    <td style="text-align:center;">
-                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
-                            <button type="button" onclick="decreaseQuantity('{{ forloop.counter }}', '{{ item.price }}')" style="background:#ff6b35;color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">-</button>
-                            <span id="quantity-{{ forloop.counter }}" style="min-width:30px;text-align:center;font-weight:600;">{{ item.quantity|default:1 }}</span>
-                            <button type="button" onclick="increaseQuantity('{{ forloop.counter }}', '{{ item.price }}')" style="background:#2c5f5f;color:#fff;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;">+</button>
-                        </div>
-                    </td>
-                    <td style="text-align:right;">
-                        <span id="item-total-{{ forloop.counter }}">{{ item.total_price|floatformat:2 }}</span> TK
-                    </td>
-                    <td style="text-align:right;">
-                        <button type="button" onclick="removeItem('{{ forloop.counter }}')" style="background:#dc3545;color:#fff;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:12px;">🗑️</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div style="margin-bottom:1rem;">
-            <label for="coupon" style="font-weight:500;">Coupon (%):</label>
-            <input type="number" id="coupon" name="coupon" min="0" max="100" style="padding:8px 12px;border-radius:6px;border:1px solid #ddd;width:120px;margin-left:10px;" value="{{ coupon|default:'' }}">
-            <button type="button" onclick="applyCoupon()" style="background:#2c5f5f;color:#fff;padding:8px 18px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-left:10px;">Apply</button>
-        </div>
-        <div style="font-size:18px;font-weight:600;margin-bottom:1rem;">
-            Total: <span id="total">{{ total|floatformat:2 }}</span> TK
-        </div>
-        {% if not coupon or coupon == 0 %}
-        <div id="discount-row" style="font-size:18px;font-weight:600;color:#2c5f5f;margin-bottom:2rem;display:none;">
-            Discounted Total: <span id="discounted-total">{% if discounted_total %}{{ discounted_total|floatformat:2 }}{% else %}0.00{% endif %}</span> TK
-        </div>
+<div style="max-width:800px;margin:2rem auto;padding:0 20px;">
+    <!-- Header Section -->
+    <div style="text-align:center;margin-bottom:2rem;">
+        <h1 style="color:#2c5f5f;font-size:2.2rem;margin-bottom:0.5rem;display:flex;align-items:center;justify-content:center;gap:12px;">
+            <svg width="32" height="32" fill="#ff6b35" viewBox="0 0 24 24">
+                <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
+            </svg>
+            Your Shopping Cart
+        </h1>
+        <p style="color:#666;font-size:1.1rem;">Review your items before checkout</p>
+    </div>
+
+    <!-- Cart Items Card -->
+    <div style="background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);overflow:hidden;margin-bottom:2rem;">
+        {% if cart_items %}
+            <!-- Items Table -->
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead style="background:linear-gradient(135deg, #2c5f5f 0%, #ff6b35 100%);color:#fff;">
+                        <tr>
+                            <th style="text-align:left;padding:1rem;font-weight:600;">Product</th>
+                            <th style="text-align:center;padding:1rem;font-weight:600;">Quantity</th>
+                            <th style="text-align:right;padding:1rem;font-weight:600;">Total</th>
+                            <th style="text-align:center;padding:1rem;font-weight:600;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr id="item-{{ forloop.counter }}" data-unit-price="{{ item.price }}" data-item-id="{{ item.id }}" style="border-bottom:1px solid #f0f0f0;">
+                            <td style="padding:1.5rem 1rem;">
+                                <div>
+                                    <h4 style="margin:0;color:#2c5f5f;font-size:1.1rem;">{{ item.name }}</h4>
+                                    <p style="margin:0.25rem 0 0 0;color:#666;font-size:0.9rem;">{{ item.price }} TK each</p>
+                                </div>
+                            </td>
+                            <td style="padding:1.5rem 1rem;text-align:center;">
+                                <div style="display:inline-flex;align-items:center;gap:8px;background:#f8f9fa;border-radius:25px;padding:4px;">
+                                    <button type="button" onclick="decreaseQuantity('{{ forloop.counter }}', '{{ item.price }}')" style="background:#ff6b35;color:#fff;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;">−</button>
+                                    <span id="quantity-{{ forloop.counter }}" style="min-width:40px;text-align:center;font-weight:600;font-size:1.1rem;">{{ item.quantity|default:1 }}</span>
+                                    <button type="button" onclick="increaseQuantity('{{ forloop.counter }}', '{{ item.price }}')" style="background:#2c5f5f;color:#fff;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;">+</button>
+                                </div>
+                            </td>
+                            <td style="padding:1.5rem 1rem;text-align:right;">
+                                <span id="item-total-{{ forloop.counter }}" style="font-size:1.2rem;font-weight:700;color:#2c5f5f;">{{ item.total_price|floatformat:2 }}</span>
+                                <span style="color:#666;font-size:0.9rem;"> TK</span>
+                            </td>
+                            <td style="padding:1.5rem 1rem;text-align:center;">
+                                <button type="button" onclick="removeItem('{{ forloop.counter }}')" style="background:#dc3545;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;transition:all 0.3s;">
+                                    🗑️ Remove
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Coupon & Total Section -->
+            <div style="background:#f8fdff;padding:2rem;border-top:1px solid #e9ecef;">
+                <!-- Coupon Section -->
+                <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;">
+                    <label style="font-weight:600;color:#2c5f5f;white-space:nowrap;">Have a coupon?</label>
+                    <div style="display:flex;gap:8px;flex:1;">
+                        <input type="number" id="coupon" min="0" max="100" placeholder="Enter discount %" style="flex:1;padding:12px;border:2px solid #e9ecef;border-radius:8px;font-size:1rem;" value="{{ coupon|default:'' }}">
+                        <button type="button" onclick="applyCoupon()" style="background:#28a745;color:#fff;padding:12px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;white-space:nowrap;">Apply</button>
+                    </div>
+                </div>
+
+                <!-- Totals -->
+                <div style="text-align:right;">
+                    <div style="font-size:1.3rem;font-weight:600;color:#666;margin-bottom:0.5rem;">
+                        Subtotal: <span id="total" style="color:#2c5f5f;">{{ total|floatformat:2 }}</span> TK
+                    </div>
+                    <div id="discount-row" style="font-size:1.3rem;font-weight:600;color:#28a745;margin-bottom:1rem;{% if not coupon or coupon == 0 %}display:none;{% endif %}">
+                        Final Total: <span id="discounted-total">{% if discounted_total %}{{ discounted_total|floatformat:2 }}{% else %}0.00{% endif %}</span> TK
+                    </div>
+                    <button type="button" onclick="goToPayment()" style="background:linear-gradient(135deg, #ff6b35 0%, #2c5f5f 100%);color:#fff;padding:16px 40px;border:none;border-radius:25px;font-size:1.2rem;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(255,107,53,0.3);transition:all 0.3s;">
+                        🛒 Proceed to Checkout
+                    </button>
+                </div>
+            </div>
         {% else %}
-        <div id="discount-row" style="font-size:18px;font-weight:600;color:#2c5f5f;margin-bottom:2rem;">
-            Discounted Total: <span id="discounted-total">{% if discounted_total %}{{ discounted_total|floatformat:2 }}{% else %}0.00{% endif %}</span> TK
-        </div>
+            <!-- Empty Cart -->
+            <div style="text-align:center;padding:4rem 2rem;">
+                <div style="font-size:5rem;margin-bottom:1rem;opacity:0.3;">🛒</div>
+                <h3 style="color:#666;margin-bottom:1rem;font-size:1.5rem;">Your cart is empty</h3>
+                <p style="color:#999;margin-bottom:2rem;">Looks like you haven't added any items yet.</p>
+                <a href="{% url 'shop:shop' %}" style="background:#ff6b35;color:#fff;padding:12px 32px;border-radius:25px;text-decoration:none;font-weight:600;display:inline-block;">Start Shopping</a>
+            </div>
         {% endif %}
-        <input type="hidden" id="coupon-value" value="{{ coupon|default:0 }}">
-        <button type="button" onclick="goToPayment()" style="background:#ff6b35;color:#fff;padding:12px 32px;border:none;border-radius:20px;font-size:18px;font-weight:600;cursor:pointer;width:100%;">Go to Payment</button>
-    </form>
-</main>
+    </div>
+</div>
 
 <script>
 // Initialize item totals on page load

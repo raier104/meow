@@ -33,17 +33,22 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "meow.urls"
 
-TEMPLATES = [{
-    "BACKEND":"django.template.backends.django.DjangoTemplates",
-    "DIRS":[BASE_DIR/"templates"],
-    "APP_DIRS":True,
-    "OPTIONS":{"context_processors":[
-        "django.template.context_processors.debug",
-        "django.template.context_processors.request",
-        "django.contrib.auth.context_processors.auth",
-        "django.contrib.messages.context_processors.messages",
-    ]},
-}]
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'shop.context_processors.cart_context',  # Add this line
+            ],
+        },
+    },
+]
 
 WSGI_APPLICATION = "meow.wsgi.application"
 

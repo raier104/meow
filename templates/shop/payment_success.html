@@ -1,42 +1,105 @@
 {% extends "base.html" %}
 {% block title %}Payment Successful - MEOW{% endblock %}
 {% block content %}
-<main class="main-content" style="max-width:600px;margin:2rem auto;">
-    <div style="background:#fff;padding:1.5rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
-        <h1 style="color:#4caf50;margin-bottom:1rem; text-align: center;">Payment Successful</h1>
-        <p style="font-size:1.1rem;color:#444;text-align: center;">Thank you for your payment!</p>
-        <div id="receipt" style="margin:2rem auto 1.5rem auto;max-width:420px;text-align:left;background:#f8f9fa;padding:1.5rem;border-radius:10px;">
-            <div style="text-align:center;font-size:2rem;font-weight:700;margin-bottom:1rem;">
-                <span style="font-size:2.2rem;">🐾</span> MEOW
+<div style="max-width:700px;margin:2rem auto;padding:0 20px;">
+    <!-- Success Animation -->
+    <div style="text-align:center;margin-bottom:2rem;">
+        <div style="width:100px;height:100px;margin:0 auto 1rem;background:linear-gradient(135deg, #28a745 0%, #20c997 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;animation:bounce 1s ease-in-out;">
+            <svg width="50" height="50" fill="#fff" viewBox="0 0 24 24">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+        </div>
+        <h1 style="color:#28a745;font-size:2.5rem;margin-bottom:0.5rem;font-weight:700;">Payment Successful! 🎉</h1>
+        <p style="color:#666;font-size:1.2rem;">Thank you for shopping with MEOW!</p>
+    </div>
+
+    <!-- Receipt Card -->
+    <div style="background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);overflow:hidden;margin-bottom:2rem;">
+        <!-- Receipt Header -->
+        <div style="background:linear-gradient(135deg, #2c5f5f 0%, #ff6b35 100%);padding:2rem;color:#fff;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:0.5rem;">🐾</div>
+            <h2 style="margin:0;font-size:1.8rem;font-weight:700;">MEOW</h2>
+            <p style="margin:0.5rem 0 0 0;opacity:0.9;">Digital Receipt</p>
+        </div>
+
+        <!-- Receipt Content -->
+        <div id="receipt" style="padding:2rem;">
+            <!-- Customer Info -->
+            <div style="background:#f8f9fa;padding:1.5rem;border-radius:12px;margin-bottom:2rem;">
+                <h3 style="color:#2c5f5f;margin:0 0 1rem 0;font-size:1.2rem;">Customer Information</h3>
+                <div style="display:grid;gap:0.5rem;">
+                    <div><strong>Name:</strong> {{ user.get_full_name|default:user.username }}</div>
+                    <div><strong>Email:</strong> {{ user.email }}</div>
+                    <div><strong>Payment Method:</strong> {{ payment_method|title }}</div>
+                </div>
             </div>
-            <div style="margin-bottom:1rem;">
-                <strong>Username:</strong> {{ user.username }}<br>
-                <strong>Email:</strong> {{ user.email }}<br>
-                <strong>Payment Method:</strong> {{ payment_method|title }}<br>
-                <strong>Amount:</strong> {{ total|floatformat:2 }} TK
-            </div>
-            <div>
-                <strong>Products:</strong>
-                <ul style="margin:0 0 0 1.2rem;">
+
+            <!-- Order Summary -->
+            <div style="margin-bottom:2rem;">
+                <h3 style="color:#2c5f5f;margin:0 0 1rem 0;font-size:1.2rem;">Order Summary</h3>
+                <div style="border:1px solid #e9ecef;border-radius:8px;overflow:hidden;">
                     {% for item in cart_items %}
-                        <li>{{ item.name }} ({{ item.quantity }}x) - {{ item.total_price|floatformat:2 }} TK</li>
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid #f0f0f0;background:{% cycle '#fff' '#f8f9fa' %};">
+                        <div>
+                            <div style="font-weight:600;color:#2c5f5f;">{{ item.name }}</div>
+                            <div style="color:#666;font-size:0.9rem;">{{ item.price }} TK × {{ item.quantity }}</div>
+                        </div>
+                        <div style="font-weight:700;color:#ff6b35;">{{ item.total_price|floatformat:2 }} TK</div>
+                    </div>
                     {% endfor %}
-                </ul>
+                </div>
+            </div>
+
+            <!-- Total -->
+            <div style="background:linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);padding:1.5rem;border-radius:12px;text-align:center;">
+                <div style="font-size:1.1rem;color:#666;margin-bottom:0.5rem;">Total Amount Paid</div>
+                <div style="font-size:2.5rem;font-weight:700;color:#28a745;">{{ total|floatformat:2 }} <span style="font-size:1.5rem;">TK</span></div>
             </div>
         </div>
-        <div style="display:flex;justify-content:center;gap:1.5rem;">
-            <button onclick="printReceipt()" style="background:#2c5f5f;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;border:none;cursor:pointer;">Print Receipt</button>
-            <a href="{% url 'users:user_home_page' %}" style="background:#ff6b35;color:#fff;padding:10px 32px;border-radius:20px;font-weight:600;text-decoration:none;display:inline-block;">Go to Home</a>
+
+        <!-- Action Buttons -->
+        <div style="background:#f8fdff;padding:2rem;display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+            <button onclick="printReceipt()" style="background:#2c5f5f;color:#fff;padding:12px 24px;border-radius:25px;font-weight:600;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24">
+                    <path d="M19 8H5C3.89 8 3 8.89 3 10V20C3 21.11 3.89 22 5 22H19C20.11 22 21 21.11 21 20V10C21 8.89 20.11 8 19 8ZM19 20H5V12H19V20ZM17 2H7C5.89 2 5 2.89 5 4V6H19V4C19 2.89 18.11 2 17 2Z"/>
+                </svg>
+                Print Receipt
+            </button>
+            <a href="{% url 'users:user_home_page' %}" style="background:linear-gradient(135deg, #ff6b35 0%, #2c5f5f 100%);color:#fff;padding:12px 24px;border-radius:25px;font-weight:600;text-decoration:none;display:flex;align-items:center;gap:8px;">
+                <svg width="18" height="18" fill="#fff" viewBox="0 0 24 24">
+                    <path d="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z"/>
+                </svg>
+                Continue Shopping
+            </a>
         </div>
     </div>
-</main>
+</div>
+
+<style>
+@keyframes bounce {
+    0%, 20%, 53%, 80%, 100% {
+        transform: translate3d(0,0,0);
+    }
+    40%, 43% {
+        transform: translate3d(0,-15px,0);
+    }
+    70% {
+        transform: translate3d(0,-7px,0);
+    }
+    90% {
+        transform: translate3d(0,-2px,0);
+    }
+}
+</style>
+
 <script>
 function printReceipt() {
     var printContents = document.getElementById('receipt').innerHTML;
     var win = window.open('', '', 'height=700,width=500');
     win.document.write('<html><head><title>Receipt - MEOW</title>');
-    win.document.write('<style>body{font-family:sans-serif;padding:2rem;} ul{margin-left:1.2rem;}</style>');
+    win.document.write('<style>body{font-family:sans-serif;padding:2rem;color:#333;} .no-print{display:none;}</style>');
     win.document.write('</head><body>');
+    win.document.write('<div style="text-align:center;margin-bottom:2rem;"><h1>🐾 MEOW</h1><p>Digital Receipt</p></div>');
     win.document.write(printContents);
     win.document.write('</body></html>');
     win.document.close();

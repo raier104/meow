@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Search Results - MEOW{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 2rem auto; padding: 0 20px;">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="color: #2c5f5f; margin-bottom: 0.5rem;">Search Results</h1>
+        {% if query %}
+            <p style="color: #666; font-size: 1.1rem;">
+                {% if products %}
+                    Found {{ products.count }} result{{ products.count|pluralize }} for "<strong>{{ query }}</strong>"
+                {% else %}
+                    No results found for "<strong>{{ query }}</strong>"
+                {% endif %}
+            </p>
+        {% else %}
+            <p style="color: #666; font-size: 1.1rem;">Please enter a search term.</p>
+        {% endif %}
+    </div>
+
+    {% if products %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+            {% for product in products %}
+                <div style="background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.10); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 100%; height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #666;">
+                            No Image
+                        </div>
+                    {% endif %}
+                    
+                    <div style="padding: 1.5rem;">
+                        <h3 style="margin: 0 0 0.5rem 0; color: #2c5f5f; font-size: 1.2rem;">{{ product.name }}</h3>
+                        <p style="margin: 0 0 1rem 0; color: #666; font-size: 0.9rem;">
+                            Category: {{ product.category.name|capfirst }}
+                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 1.3rem; font-weight: 700; color: #ff6b35;">{{ product.price }} TK</span>
+                            <form action="{% url 'shop:add_to_cart' product.id %}" method="post" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" style="background: #2c5f5f; color: #fff; border: none; padding: 10px 20px; border-radius: 25px; font-weight: 600; cursor: pointer; transition: background 0.3s;">
+                                    Add to Cart
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% elif query %}
+        <div style="text-align: center; padding: 3rem; background: #f8f9fa; border-radius: 12px; margin-top: 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🔍</div>
+            <h3 style="color: #666; margin-bottom: 1rem;">No products found</h3>
+            <p style="color: #888; margin-bottom: 2rem;">Try searching with different keywords or browse our categories:</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'shop:food' %}" style="background: #ff6b35; color: #fff; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 600;">Food</a>
+                <a href="{% url 'shop:toy' %}" style="background: #2c5f5f; color: #fff; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 600;">Toys</a>
+                <a href="{% url 'shop:cloth' %}" style="background: #28a745; color: #fff; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 600;">Cloth</a>
+                <a href="{% url 'shop:medicine' %}" style="background: #dc3545; color: #fff; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 600;">Medicine</a>
+                <a href="{% url 'shop:carrier' %}" style="background: #6f42c1; color: #fff; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 600;">Carrier</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.product-card button:hover {
+    background: #1a4343;
+}
+</style>
+{% endblock %}
