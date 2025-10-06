@@ -57,26 +57,54 @@
 </style>
 <section class="category-grid" style="padding: 40px 0 60px 0; display: grid; grid-template-columns: repeat(4, minmax(220px, 1fr)); gap: 2rem;">
     {% for daycare in daycares %}
-    <div class="category-card">
+    <div class="category-card" style="display: flex; flex-direction: column; height: 100%;">
         {% if daycare.image %}
             <img src="{{ daycare.image.url }}" alt="{{ daycare.name }}" style="width: 100%; height: 180px; object-fit: cover;">
         {% else %}
             <img src="{% static 'images/daycare/default.jpg' %}" alt="No Image" style="width: 100%; height: 180px; object-fit: cover;">
         {% endif %}
-        <h5 style="margin-top: 15px; font-size: 1.2rem; font-weight: bold;">{{ daycare.name }}</h5>
-        <p style="font-size: 0.9rem; color: #555; margin: 8px 0;">{{ daycare.address }}</p>
-        {% if daycare.phone %}<p style="font-size: 0.9rem; color: #555; margin: 8px 0;">Phone: {{ daycare.phone }}</p>{% endif %}
-        {% if daycare.description %}<p style="font-size: 0.9rem; color: #555; margin: 8px 0;">{{ daycare.description }}</p>{% endif %}
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 12px;">
-            {% if daycare.map_link %}
-                <a href="{{ daycare.map_link }}" target="_blank" class="cta-button" style="padding: 10px 20px; border-radius: 6px; display: inline-block;">View on map</a>
-            {% endif %}
-            {% if daycare.facebook_page %}
-                <a href="{{ daycare.facebook_page }}" target="_blank" class="cta-button" style="padding: 8px 16px; border-radius: 6px; display: inline-block; background: #1877f2; color: #fff; font-weight: 600;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 4px;"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>
-                    Facebook
-                </a>
-            {% endif %}
+        
+        <div style="padding: 15px; flex: 1; display: flex; flex-direction: column;">
+            <h5 style="margin: 0 0 8px 0; font-size: 1.2rem; font-weight: bold;">{{ daycare.name }}</h5>
+            <p style="font-size: 0.9rem; color: #555; margin: 4px 0;">{{ daycare.address }}</p>
+            {% if daycare.phone %}<p style="font-size: 0.9rem; color: #555; margin: 4px 0;">Phone: {{ daycare.phone }}</p>{% endif %}
+            {% if daycare.description %}<p style="font-size: 0.9rem; color: #555; margin: 4px 0;">{{ daycare.description }}</p>{% endif %}
+            
+            <!-- Spacer to push buttons to bottom -->
+            <div style="flex: 1;"></div>
+            
+            <!-- Button container at bottom -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+                <!-- Top row: Map and Facebook buttons side by side -->
+                <div style="display: flex; gap: 8px;">
+                    {% if daycare.map_link %}
+                        <button onclick="window.open('{{ daycare.map_link }}', '_blank')" style="background:#ff6b35;color:#fff;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center;flex:1;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+                            Map
+                        </button>
+                    {% endif %}
+                    {% if daycare.facebook_page %}
+                        <button onclick="window.open('{{ daycare.facebook_page }}', '_blank')" style="background:#1877f2;color:#fff;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;justify-content:center;flex:1;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.595 0 0 .592 0 1.326v21.348C0 23.408.595 24 1.325 24h11.495v-9.294H9.692v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116C23.406 24 24 23.408 24 22.674V1.326C24 .592 23.406 0 22.675 0"/></svg>
+                            Facebook
+                        </button>
+                    {% endif %}
+                </div>
+                
+                <!-- Bottom row: View Details button -->
+                <button onclick="toggleDetails('daycare-{{ daycare.id }}')" style="background:#2c5f5f;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:600;width:100%;">
+                    View Details
+                </button>
+                
+                <!-- Hidden details section -->
+                <div id="daycare-{{ daycare.id }}" style="display:none;margin-top:10px;padding:10px;background:#f8f9fa;border-radius:8px;text-align:left;">
+                    <h6 style="margin:0 0 8px 0;color:#2c5f5f;font-weight:600;">Daycare Information:</h6>
+                    <p style="font-size:0.85rem;margin:4px 0;"><strong>Name:</strong> {{ daycare.name }}</p>
+                    <p style="font-size:0.85rem;margin:4px 0;"><strong>Address:</strong> {{ daycare.address }}</p>
+                    {% if daycare.phone %}<p style="font-size:0.85rem;margin:4px 0;"><strong>Phone:</strong> {{ daycare.phone }}</p>{% endif %}
+                    {% if daycare.description %}<p style="font-size:0.85rem;margin:4px 0;"><strong>About:</strong> {{ daycare.description }}</p>{% endif %}
+                </div>
+            </div>
         </div>
     </div>
     {% empty %}
@@ -84,5 +112,22 @@
     {% endfor %}
 </section>
 </div>
+
+<script>
+function toggleDetails(daycareId) {
+    var detailsDiv = document.getElementById(daycareId);
+    var button = event.target;
+    
+    if (detailsDiv.style.display === 'none' || detailsDiv.style.display === '') {
+        detailsDiv.style.display = 'block';
+        button.innerHTML = 'Hide Details';
+        button.style.background = '#6c757d';
+    } else {
+        detailsDiv.style.display = 'none';
+        button.innerHTML = 'View Details';
+        button.style.background = '#2c5f5f';
+    }
+}
+</script>
 
 {% endblock %}

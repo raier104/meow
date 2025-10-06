@@ -5,30 +5,72 @@
   <h1 style="text-align:center;">Vet Clinics & Doctors</h1>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;">
     {% for clinic in clinics %}
-    <div style="background:#fff;padding:1.5rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
-      <h2 style="margin-bottom:0.5rem;">{{ clinic.name }}</h2>
-      <p style="margin-bottom:0.5rem;">{{ clinic.address }}</p>
-      <p style="margin-bottom:0.5rem;">Phone: {{ clinic.phone }}</p>
-      {% if clinic.map_link %}
-      <a href="{{ clinic.map_link }}" target="_blank" style="color:#1877f2;">View on map</a>
+    <div style="background:#fff;padding:1.5rem;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.10);display:flex;flex-direction:column;height:100%;">
+      <h2 style="margin-bottom:0.5rem;color:#2c5f5f;">{{ clinic.name }}</h2>
+      <p style="margin-bottom:0.5rem;color:#666;"><strong>Address:</strong> {{ clinic.address }}</p>
+      {% if clinic.phone %}
+      <p style="margin-bottom:0.5rem;color:#666;"><strong>Phone:</strong> {{ clinic.phone }}</p>
       {% endif %}
-      <h4 style="margin-top:1.5rem;">Doctors:</h4>
-      <ul style="padding-left:1.2rem;">
+      
+      <!-- Spacer to push buttons to bottom -->
+      <div style="flex:1;"></div>
+      
+      <!-- Button container at bottom -->
+      <div style="display:flex;gap:0.5rem;margin-top:1.5rem;">
+        {% if clinic.map_link %}
+        <a href="{{ clinic.map_link }}" target="_blank" style="background:#2c5f5f;color:#fff;padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.9rem;display:inline-flex;align-items:center;gap:6px;flex:1;justify-content:center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
+          Map
+        </a>
+        {% endif %}
+        <button onclick="toggleDoctors('clinic-{{ clinic.id }}')" style="background:#ff6b35;color:#fff;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:0.9rem;flex:1;">
+          View Details
+        </button>
+      </div>
+      
+      <!-- Hidden details section -->
+      <div id="clinic-{{ clinic.id }}" style="display:none;margin-top:1.5rem;border-top:1px solid #eee;padding-top:1rem;">
+        <h4 style="margin-bottom:1rem;color:#2c5f5f;">Available Doctors:</h4>
         {% for doctor in clinic.doctor_set.all %}
-        <li style="margin-bottom:0.5rem;">
-          <strong>{{ doctor.name }}</strong>
-          {% if doctor.specialization %} - {{ doctor.specialization }}{% endif %}
-          <span style="color:#ff6b35;"> (Fee: {{ doctor.fee }} TK)</span>
-          <a href="{% url 'vets:book_appointment' doctor.id %}" style="margin-left:1rem; background:#ff6b35;color:#fff;padding:4px 14px;border-radius:8px;text-decoration:none;font-size:0.95rem;">Book</a>
-        </li>
+        <div style="background:#f8f9fa;padding:1rem;margin-bottom:0.5rem;border-radius:8px;border-left:4px solid #ff6b35;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;">
+            <div>
+              <strong style="color:#2c5f5f;">Dr. {{ doctor.name }}</strong>
+              {% if doctor.specialization %}
+              <p style="margin:0.25rem 0;color:#666;font-size:0.9rem;">{{ doctor.specialization }}</p>
+              {% endif %}
+              <p style="margin:0.25rem 0;color:#ff6b35;font-weight:600;">Fee: {{ doctor.fee }} TK</p>
+            </div>
+            <a href="{% url 'vets:book_appointment' doctor.id %}" style="background:#2c5f5f;color:#fff;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:0.85rem;margin-top:0.5rem;">Book Appointment</a>
+          </div>
+        </div>
         {% empty %}
-        <li>No doctors listed.</li>
+        <p style="color:#666;font-style:italic;">No doctors available at this clinic.</p>
         {% endfor %}
-      </ul>
+      </div>
     </div>
     {% empty %}
-    <p>No vet clinics found.</p>
+    <div style="text-align:center;grid-column:1/-1;padding:2rem;">
+      <p style="font-size:1.1rem;color:#666;">No vet clinics found.</p>
+    </div>
     {% endfor %}
   </div>
 </div>
+
+<script>
+function toggleDoctors(clinicId) {
+  var doctorsDiv = document.getElementById(clinicId);
+  var button = event.target;
+  
+  if (doctorsDiv.style.display === 'none' || doctorsDiv.style.display === '') {
+    doctorsDiv.style.display = 'block';
+    button.innerHTML = 'Hide Details';
+    button.style.background = '#6c757d';
+  } else {
+    doctorsDiv.style.display = 'none';
+    button.innerHTML = 'View Details';
+    button.style.background = '#ff6b35';
+  }
+}
+</script>
 {% endblock %}
