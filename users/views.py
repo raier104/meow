@@ -5,6 +5,13 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def approval_pending(request):
     User = get_user_model()
+    if request.method == 'POST' and request.user.is_superuser:
+        if 'approve_seller_id' in request.POST:
+            user_id = request.POST['approve_seller_id']
+            User.objects.filter(id=user_id, is_seller=True).update(is_approved=True)
+        if 'approve_clinic_id' in request.POST:
+            user_id = request.POST['approve_clinic_id']
+            User.objects.filter(id=user_id, is_clinic=True).update(is_approved=True)
     seller_users = User.objects.filter(is_seller=True)
     clinic_users = User.objects.filter(is_clinic=True)
     return render(request, 'users/approval_pending.html', {

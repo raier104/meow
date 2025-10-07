@@ -13,7 +13,10 @@
                     {% if user.is_approved %}
                         <span style="background:#28a745;color:#fff;padding:2px 8px;border-radius:12px;">Approved</span>
                     {% else %}
-                        <span style="background:#ff6b35;color:#fff;padding:2px 8px;border-radius:12px;">Pending</span>
+                        <form method="post" style="margin:0;display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" name="approve_seller_id" value="{{ user.id }}" style="background:#ff6b35;color:#fff;padding:2px 8px;border:none;border-radius:12px;font-size:0.85rem;cursor:pointer;">Approve</button>
+                        </form>
                     {% endif %}
                 </li>
             {% endfor %}
@@ -30,7 +33,10 @@
                     {% if user.is_approved %}
                         <span style="background:#28a745;color:#fff;padding:2px 8px;border-radius:12px;">Approved</span>
                     {% else %}
-                        <span style="background:#ff6b35;color:#fff;padding:2px 8px;border-radius:12px;">Pending</span>
+                        <form method="post" style="margin:0;display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" name="approve_clinic_id" value="{{ user.id }}" style="background:#ff6b35;color:#fff;padding:2px 8px;border:none;border-radius:12px;font-size:0.85rem;cursor:pointer;">Approve</button>
+                        </form>
                     {% endif %}
                 </li>
             {% endfor %}
