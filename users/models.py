@@ -11,6 +11,7 @@ USER_TYPE_CHOICES = (
 class CustomUser(AbstractUser):
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='user')
     is_seller = models.BooleanField(default=False)
+    is_clinic = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
