@@ -1,9 +1,46 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+
+# Approval Pending Users View
+@login_required
+def approval_pending(request):
+    User = get_user_model()
+    seller_users = User.objects.filter(is_seller=True)
+    clinic_users = User.objects.filter(is_clinic=True)
+    return render(request, 'users/approval_pending.html', {
+        'seller_users': seller_users,
+        'clinic_users': clinic_users,
+    })
+# Approve Users View for Admin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+@login_required
+def approve_users(request):
+    if not request.user.is_superuser:
+        return redirect('users:profile')
+    User = get_user_model()
+    seller_users = User.objects.filter(is_seller=True, is_approved=False)
+    clinic_users = User.objects.filter(is_clinic=True, is_approved=False)
+    if request.method == 'POST':
+        if 'approve_seller_id' in request.POST:
+            user_id = request.POST['approve_seller_id']
+            User.objects.filter(id=user_id, is_seller=True).update(is_approved=True)
+            seller_users = User.objects.filter(is_seller=True, is_approved=False)
+        if 'approve_clinic_id' in request.POST:
+            user_id = request.POST['approve_clinic_id']
+            User.objects.filter(id=user_id, is_clinic=True).update(is_approved=True)
+            clinic_users = User.objects.filter(is_clinic=True, is_approved=False)
+    return render(request, 'users/approve_users.html', {
+        'seller_users': seller_users,
+        'clinic_users': clinic_users,
+    })
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, get_user_model, logout
-from django.contrib.auth.forms import AuthenticationForm  # <-- Add this import
+from django.contrib.auth.forms import AuthenticationForm
 from django import forms
 from django.contrib.auth.decorators import login_required
-from .forms import CustomUserCreationForm  # Add this import if you have a forms.py with CustomUserCreationForm
+from .forms import CustomUserCreationForm
 from django.conf import settings
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
@@ -44,6 +81,10 @@ def user_register(request):
                 user.is_seller = True
                 user.is_approved = False
                 waiting_approval = True
+            elif user.user_type == 'clinic':
+                user.is_clinic = True
+                user.is_approved = False
+                waiting_approval = True
             else:
                 user.is_approved = True
             user.save()
@@ -76,8 +117,15 @@ def about_us_view(request):
 # Profile View
 @login_required
 def profile(request):
-    if request.method == 'POST' and 'photo' in request.FILES:
-        request.user.photo = request.FILES['photo']
-        request.user.save()
+    User = get_user_model()
+    if request.method == 'POST':
+        if 'photo' in request.FILES:
+            request.user.photo = request.FILES['photo']
+            request.user.save()
+        if request.user.is_superuser:
+            if 'approve_seller' in request.POST:
+                User.objects.filter(is_seller=True, is_approved=False).update(is_approved=True)
+            if 'approve_clinic' in request.POST:
+                User.objects.filter(is_clinic=True, is_approved=False).update(is_approved=True)
     return render(request, 'profile.html')
 

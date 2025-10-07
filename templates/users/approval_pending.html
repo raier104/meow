@@ -1,8 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div style="text-align: center; margin-top: 100px;">
-    <h2>Your account is awaiting admin approval.</h2>
-    <p>Please wait until an administrator approves your account.</p>
+<div style="max-width:600px;margin:2rem auto;padding:0 20px;">
+    <h2 style="text-align:center;margin-bottom:2rem;">Approval Pending Users</h2>
+    <div style="background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.08);padding:2rem;">
+        <h3 style="color:#2c5f5f;">All Sellers</h3>
+        {% if seller_users %}
+            <ul style="list-style:none;padding:0;">
+            {% for user in seller_users %}
+                <li style="margin-bottom:1rem;padding:1rem;background:#f8f9fa;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                    <span><strong>{{ user.get_full_name|default:user.username }}</strong> ({{ user.email }})</span>
+                    {% if user.is_approved %}
+                        <span style="background:#28a745;color:#fff;padding:2px 8px;border-radius:12px;">Approved</span>
+                    {% else %}
+                        <span style="background:#ff6b35;color:#fff;padding:2px 8px;border-radius:12px;">Pending</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No sellers found.</p>
+        {% endif %}
+        <h3 style="color:#2c5f5f;margin-top:2rem;">All Clinics</h3>
+        {% if clinic_users %}
+            <ul style="list-style:none;padding:0;">
+            {% for user in clinic_users %}
+                <li style="margin-bottom:1rem;padding:1rem;background:#f8f9fa;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                    <span><strong>{{ user.get_full_name|default:user.username }}</strong> ({{ user.email }})</span>
+                    {% if user.is_approved %}
+                        <span style="background:#28a745;color:#fff;padding:2px 8px;border-radius:12px;">Approved</span>
+                    {% else %}
+                        <span style="background:#ff6b35;color:#fff;padding:2px 8px;border-radius:12px;">Pending</span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No clinics found.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
