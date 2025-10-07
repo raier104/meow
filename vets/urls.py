@@ -4,6 +4,7 @@ from . import views
 app_name = "vets"
 
 urlpatterns = [
+    path("my-clinic/", views.my_clinic, name="my_clinic"),
     path("clinics/", views.clinic_list, name="clinic_list"),
     path("vet-list/", views.clinic_doctor_list, name="clinic_doctor_list"),
     path("clinic/<int:clinic_id>/", views.clinic_detail, name="clinic_detail"),

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}My Clinic Management{% endblock %}
+{% block content %}
+<div style="max-width:800px;margin:2rem auto;padding:0 20px;">
+    <h1 style="text-align:center;">My Clinic Management</h1>
+    {% if clinic %}
+        <div style="background:#fff;padding:2rem;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);margin-bottom:2rem;">
+            <h2 style="color:#2c5f5f;">{{ clinic.name }}</h2>
+            <p><strong>Address:</strong> {{ clinic.address }}</p>
+            {% if clinic.phone %}<p><strong>Phone:</strong> {{ clinic.phone }}</p>{% endif %}
+            {% if clinic.map_link %}<p><a href="{{ clinic.map_link }}" target="_blank">View on Map</a></p>{% endif %}
+        </div>
+        <div style="background:#f8f9fa;padding:2rem;border-radius:16px;">
+            <h3 style="color:#2c5f5f;">Doctors</h3>
+            {% if doctors %}
+                <ul style="list-style:none;padding:0;">
+                {% for doctor in doctors %}
+                    <li style="margin-bottom:1rem;padding:1rem;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                        <strong>{{ doctor.name }}</strong> ({{ doctor.specialization }})<br>
+                        <span>Fee: {{ doctor.fee }} TK</span>
+                        <!-- TODO: Add manage timeslots link/button here -->
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No doctors added yet.</p>
+            {% endif %}
+            <!-- TODO: Add doctor form here -->
+            <hr style="margin:2rem 0;">
+            <h4 style="color:#2c5f5f;">Add Doctor</h4>
+            <form method="post" style="margin-bottom:2rem;">
+                {% csrf_token %}
+                {{ doctor_form.as_p }}
+                <button type="submit" name="add_doctor" style="background:#2c5f5f;color:#fff;padding:10px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Add Doctor</button>
+            </form>
+        </div>
+    {% elif form %}
+        <div style="background:#fff;padding:2rem;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+            <h2 style="color:#2c5f5f;">Create Your Clinic</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" style="background:#28a745;color:#fff;padding:10px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;">Create Clinic</button>
+            </form>
+        </div>
+    {% else %}
+        <p style="text-align:center;">You are not authorized to manage a clinic.</p>
+    {% endif %}
+</div>
+{% endblock %}

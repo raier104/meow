@@ -1,6 +1,54 @@
-from django.shortcuts import render
+
+from django import forms
 from .models import VetClinic, Doctor, TimeSlot, Appointment
-from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+
+# Form for adding a doctor
+class DoctorForm(forms.ModelForm):
+    class Meta:
+        model = Doctor
+        fields = ['name', 'specialization', 'fee']
+
+# Form for creating a clinic
+class VetClinicForm(forms.ModelForm):
+    class Meta:
+        model = VetClinic
+        fields = ['name', 'address', 'map_link', 'phone']
+
+# My Clinic management view
+@login_required
+def my_clinic(request):
+    user = request.user
+    if not (user.is_clinic and user.is_approved):
+        messages.error(request, "You must be an approved clinic user to manage a clinic.")
+        return redirect('users:profile')
+    clinic = VetClinic.objects.filter(owner=user).first()
+    if clinic:
+        doctors = Doctor.objects.filter(clinic=clinic)
+        doctor_form = DoctorForm()
+        if request.method == 'POST' and 'add_doctor' in request.POST:
+            doctor_form = DoctorForm(request.POST)
+            if doctor_form.is_valid():
+                new_doctor = doctor_form.save(commit=False)
+                new_doctor.clinic = clinic
+                new_doctor.save()
+                messages.success(request, "Doctor added successfully!")
+                return redirect('vets:my_clinic')
+        return render(request, 'vets/my_clinic.html', {'clinic': clinic, 'doctors': doctors, 'doctor_form': doctor_form})
+    else:
+        if request.method == 'POST':
+            form = VetClinicForm(request.POST)
+            if form.is_valid():
+                new_clinic = form.save(commit=False)
+                new_clinic.owner = user
+                new_clinic.save()
+                messages.success(request, "Clinic created successfully!")
+                return redirect('vets:my_clinic')
+        else:
+            form = VetClinicForm()
+        return render(request, 'vets/my_clinic.html', {'form': form})
+from .models import VetClinic, Doctor, TimeSlot, Appointment
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
